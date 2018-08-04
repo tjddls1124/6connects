@@ -53,6 +53,22 @@ typedef struct {
 
 int tempBoard[width][height];
 Coord blocking[10];
+Coord battleTop[10];
+
+
+
+void myturn(int cnt);
+void saveBoard(); // 현재 board를 tempBoard에 저장
+int tempIsFree(int x, int y);
+void tempMyMove(int x, int y, int turn);
+void checkBlocking(); // 블로킹들의 위치저장 , 구조체 배열에 저장
+void changeBlocking(int n, int turn); //n번째 블로킹을 해당 turn의 돌로 변경
+void Minimax(); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을 따를 예정. 
+				//domymove() 함수를 통해 둘 돌들의 위치까지 최종적으로 출력함.
+void battleSearch(int tempboard[]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
+int getScore(int bd[]);//board 와 tempboard 에서의 총 점수값을 구합니다.
+void shapeScore();//판의 점수를 관리하는 함수
+
 
 void myturn(int cnt) {
 
@@ -113,4 +129,40 @@ void changeBlocking(int n, int turn){ //n번째 블로킹을 해당 turn의 돌로 변경
 	int y = blocking[n].y;
 
 	tempBoard[x][y] = turn; //turn : 1 or 2
+}
+
+
+void Minimax()
+{
+	battleSearch(tempBoard);			//전장탐색 알고리즘을 통해 battleTop에 우선순위순서로 둘 돌의 위치를 저장합니다.
+
+
+	getScore(tempBoard);
+
+}
+
+//qsort함수를 이용하여 상위 3개의 점수를 가진 전장을 찾아내어 배열 battleTop에 저장합니다.
+void battleSearch(int tempboard[][])
+{
+
+
+
+
+}
+
+int getScore(int bd[width][height])	//보드판의 총 점수를 받아오는 함수  - temp와 board
+{
+	if (bd == tempBoard)
+	{
+
+	}
+
+	else if (bd == board)
+	{
+
+	}
+}
+
+void shapeScore(void) {
+
 }
