@@ -262,7 +262,7 @@ void Minimax(int current_depth, int pos_x, int pos_x1, int pos_y, int pos_y1)
 
 
 //상위 3개의 점수를 가진 전장을 찾아내어 배열 battleTop에 저장합니다.
-oid battleSearch()
+void battleSearch()
 {
 	int x, y;
 	int totalScore = 0;
