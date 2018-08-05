@@ -37,15 +37,18 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include <Windows.h>
 #include <time.h>
 #include "Connect6Algo.h"
+
 #define width 19
 #define height 19
 #define depth 4			//minimax tree에서 진행하는 단계의 수
 #define childnum 3		//minimax tree에서 만들 자식노드의 수(전장탐색에서 고려할 돌의 수)
+#define firstSearchNum 7 // 2개의 최적 조합을 찾기위한 탐색개수
+
 
 // "샘플코드[C]"  -> 자신의 팀명 (수정)
 // "AI부서[C]"  -> 자신의 소속 (수정)
 // 제출시 실행파일은 반드시 팀명으로 제출!
-char info[] = { "TeamName:웅성,Department:한양대학교" };
+char info[] = { "TeamName:종웅성,Department:한양대학교" };
 
 int max_score;	//Minimax에서 사용하는 최고점 저장하는 전역변수
 
