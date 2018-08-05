@@ -36,40 +36,40 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include <stdio.h>
 #include <Windows.h>
 #include <time.h>
+#include <algorithm>
 #include "Connect6Algo.h"
+using namespace std;
 #define width 19
 #define height 19
+
+
 // "샘플코드[C]"  -> 자신의 팀명 (수정)
 // "AI부서[C]"  -> 자신의 소속 (수정)
 // 제출시 실행파일은 반드시 팀명으로 제출!
-char info[] = { "TeamName:웅성,Department:한양대학교" };
+char info[] = { "TeamName:종웅성,Department:한양대학교" };
+
+
+boolean ifFree(int x, int y);
+
+int board[width][height];
+
+int score[width][height];
+Coord scoreList[400] = { 0 };
+
+int showBoard(int x, int y);
 
 
 typedef struct {
 	int x;
 	int y;
+	int score;
 }Coord;
 
 
 int tempBoard[width][height];
-Coord blocking[10];
-
-void myturn(int cnt) {
-
-	int x[2], y[2];
-	saveBoard();
-	
-	// 이 부분에서 알고리즘 프로그램(AI)을 작성하십시오. 기본 제공된 코드를 수정 또는 삭제하고 본인이 코드를 사용하시면 됩니다.
-	// 현재 Sample code의 AI는 Random으로 돌을 놓는 Algorithm이 작성되어 있습니다.
-
-	
+Coord blocking[10]; //blocking 좌표
 
 
-	// 이 부분에서 자신이 놓을 돌을 출력하십시오.
-	// 필수 함수 : domymove(x배열,y배열,배열크기)
-	// 여기서 배열크기(cnt)는 myturn()의 파라미터 cnt를 그대로 넣어야합니다.
-	domymove(x, y, cnt);
-}
 
 void saveBoard(){ // 현재 board를 tempBoard에 저장
 	for (int i = 0; i < 19; i++){
@@ -78,9 +78,72 @@ void saveBoard(){ // 현재 board를 tempBoard에 저장
 	}
 }
 
+/**
+Score 정렬을 위한 좌표비교함수
+*/
+bool compareCoord(const Coord &a, const Coord &b) {
+	return a.score > b.score;
+}
+
+
+/**
+Score값이 높은순으로 정렬(내림차순)
+*/
+void sortScore(){
+	int count = 0;
+	for (int i = 0; i < width; i++){ //score값과 좌표추가
+		for (int j = 0; j < height; j++){
+			if (score[i][j] != 0){
+				scoreList[count].x = i;
+				scoreList[count].y = j;
+				scoreList[count].score = score[i][j];
+				count++;
+			}
+		}
+	}
+	sort(scoreList, scoreList + count, compareCoord);
+
+}
+
+
+
+
+
+void myturn(int cnt) {
+
+	int x[2], y[2];
+	saveBoard();
+
+	if (cnt == 1){
+		x[0] = 9;
+		y[0] = 9;
+	}
+
+	else {
+
+
+
+
+	}
+
+	// 이 부분에서 알고리즘 프로그램(AI)을 작성하십시오. 기본 제공된 코드를 수정 또는 삭제하고 본인이 코드를 사용하시면 됩니다.
+	// 현재 Sample code의 AI는 Random으로 돌을 놓는 Algorithm이 작성되어 있습니다.
+
+
+
+
+	// 이 부분에서 자신이 놓을 돌을 출력하십시오.
+	// 필수 함수 : domymove(x배열,y배열,배열크기)
+	// 여기서 배열크기(cnt)는 myturn()의 파라미터 cnt를 그대로 넣어야합니다.
+	domymove(x, y, cnt);
+}
+
+
+
 int tempIsFree(int x, int y){
 	return x >= 0 && y >= 0 && x < width && y < height && tempBoard[x][y] == 0;
 }
+
 
 /**
 *임시보드에 돌을 놔보기
@@ -88,9 +151,10 @@ turn 1 : my turn
 turn 2 : op turn
 */
 void tempMyMove(int x, int y, int turn){
-	if(tempIsFree)
+	if (tempIsFree)
 		tempBoard[x][y] = turn;
 }
+
 
 
 void checkBlocking(){ // 블로킹들의 위치저장 , 구조체 배열에 저장
@@ -101,10 +165,11 @@ void checkBlocking(){ // 블로킹들의 위치저장 , 구조체 배열에 저장
 				blocking[count].x = i;
 				blocking[count].y = j;
 				count++;
-			}		
-		}	 
+			}
+		}
 	}
 }
+
 
 
 void changeBlocking(int n, int turn){ //n번째 블로킹을 해당 turn의 돌로 변경
