@@ -150,7 +150,7 @@ int tempIsFree(int x, int y){
 turn 1 : my turn
 turn 2 : op turn
 */
-void tempMyMove(int x, int y, int turn){
+void tempMove(int x, int y, int turn){
 	if (tempIsFree)
 		tempBoard[x][y] = turn;
 }
