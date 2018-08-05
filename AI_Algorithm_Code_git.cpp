@@ -65,11 +65,12 @@ void checkBlocking(); // 블로킹들의 위치저장 , 구조체 배열에 저장
 void changeBlocking(int n, int turn); //n번째 블로킹을 해당 turn의 돌로 변경
 void Minimax(int a, int b, int c); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을 따를 예정. 
 //domymove() 함수를 통해 둘 돌들의 위치까지 최종적으로 출력함.
-void battleSearch(int tempboard[]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
+void battleSearch(int tempboard[19][19]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
 int getScore(int bd[]);//board 와 tempboard 에서의 총 점수값을 구합니다.
 void shapeScore();//판의 점수를 관리하는 함수
 bool ifFree(int x, int y);
 void renewScore();
+void domymove();
 
 
 
@@ -191,13 +192,13 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 		if (max_score < score)
 		{
 			max_score = score;
-			pos_x1[0] = tempPos_x1;
-			pos_y1[0] = tempPos_y1;
+			pos_x1 = tempPos_x1;
+			pos_y1 = tempPos_y1;
 
 			if (cnt > 1)
 			{
-				pos_x2[1] = tempPos_x2;
-				pos_y2[1] = tempPos_y2;
+				pos_x2 = tempPos_x2;
+				pos_y2 = tempPos_y2;
 			}
 		}
 	}
@@ -206,46 +207,47 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 	{
 		battleSearch(tempBoard);			//전장탐색 알고리즘을 통해 battleTop에 우선순위순서로 둘 돌의 위치를 저장합니다.
 
-
-		// 처음 두는 돌의 위치를 저장.
-		if (current_depth == 0)
-		{
-			tempPos_x1 = battleTop[i][0].x;
-			tempPos_y1 = battleTop[i][0].y;
-
-			if (cnt > 1)
-			{
-				tempPos_x1 = battleTop[i][1].x;
-				tempPos_y1 = battleTop[i][1].y;
-			}
-		}
-
-		else
-		{
-			tempPos_x1 = pos_x1;
-			tempPos_x2 = pos_x2;
-			tempPos_y1 = pos_y1;
-			tempPos_y2 = pos_y2;
-		}
-
 		//돌두고 Minimax 그리고 돌 지우기
 		for (int i = 0; i < childnum; i++)		//돌을 두어 childnum만큼 tree의 노드를 생성합니다.
+		{
+			// 처음 두는 돌의 위치를 저장.
+			if (current_depth == 0)
+			{
+				tempPos_x1 = battleTop[i][0].x;
+				tempPos_y1 = battleTop[i][0].y;
+
+				if (cnt > 1)
+				{
+					tempPos_x1 = battleTop[i][1].x;
+					tempPos_y1 = battleTop[i][1].y;
+				}
+			}
+
+			else
+			{
+				tempPos_x1 = pos_x1;
+				tempPos_x2 = pos_x2;
+				tempPos_y1 = pos_y1;
+				tempPos_y2 = pos_y2;
+			}
+
 			for (int C = 0; C < cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
 			{
 				int turn;
-				turn = (current_depth + 1) % 2;
+				turn = (current_depth + 1) % 2;		//depth에 따라 turn이 달라짐.
 				if (turn == 0)
 					turn = 2;
 
 				tempMyMove(battleTop[i][C].x, battleTop[i][C].y, turn);		//임시 판에 돌 두기
 			}
 
-		Minimax(current_depth + 1, tempPos);
+			Minimax(current_depth + 1, tempPos_x1, tempPos_x2, tempPos_y1, tempPos_y2, cnt);
 
 
-		for (int C = 0; C < cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
-		{
-			deleteTempMove(battleTop[i][C].x, battleTop[i][C].y, turn)	//둔 돌 삭제
+			for (int C = 0; C < cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+			{
+				deleteTempMove(battleTop[i][C].x, battleTop[i][C].y);	//둔 돌 삭제
+			}
 		}
 	}
 }
