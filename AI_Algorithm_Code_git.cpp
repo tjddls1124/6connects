@@ -38,6 +38,8 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include <time.h>
 #include "Connect6Algo.h"
 
+using namespace std;
+
 #define width 19
 #define height 19
 #define depth 4			//minimax tree에서 진행하는 단계의 수
@@ -51,6 +53,7 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 char info[] = { "TeamName:종웅성,Department:한양대학교" };
 
 int max_score;	//Minimax에서 사용하는 최고점 저장하는 전역변수
+int showBoard(int x, int y);
 
 
 typedef struct {
@@ -75,7 +78,14 @@ void Minimax(); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을
 void battleSearch(int tempboard[]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
 int getScore(int bd[]);//board 와 tempboard 에서의 총 점수값을 구합니다.
 void shapeScore();//판의 점수를 관리하는 함수
+bool ifFree(int x, int y);
+void renewScore();
 
+
+
+int board[width][height];
+int score[width][height];
+Coord scoreList[400] = { 0 };
 
 void myturn(int cnt) {
 
@@ -103,6 +113,34 @@ void saveBoard() {
 			tempBoard[i][j] = board[i][j];
 	}
 }
+
+/**
+Score 정렬을 위한 좌표비교함수
+*/
+bool compareCoord(const Coord &a, const Coord &b) {
+	return a.score > b.score;
+}
+
+/**
+Score값이 높은순으로 정렬(내림차순)
+*/
+void sortScore() {
+	int count = 0;
+	for (int i = 0; i < width; i++) { //score값과 좌표추가
+		for (int j = 0; j < height; j++) {
+			if (score[i][j] != 0) {
+				scoreList[count].x = i;
+				scoreList[count].y = j;
+				scoreList[count].score = score[i][j];
+				count++;
+			}
+		}
+	}
+	sort(scoreList, scoreList + count, compareCoord);
+
+
+}
+
 
 int tempIsFree(int x, int y) {
 	return x >= 0 && y >= 0 && x < width && y < height && tempBoard[x][y] == 0;
@@ -224,12 +262,17 @@ void Minimax(int current_depth, int pos_x, int pos_x1, int pos_y, int pos_y1)
 
 
 //상위 3개의 점수를 가진 전장을 찾아내어 배열 battleTop에 저장합니다.
-void battleSearch(int tempboard[][])
+oid battleSearch()
 {
-
-
-
-
+	int x, y;
+	int totalScore = 0;
+	for (int i = 0; i < firstSearchNum; i++) {
+		x = scoreList[i].x;
+		y = scoreList[i].y;
+		totalScore += scoreList[i].score;
+		tempBoard[x][y] = 1; //돌을 놔보고 갱신
+		renewScore();
+	}
 }
 
 //보드판의 총 점수를 받아오는 함수  - tempBoard와 board중 선택
