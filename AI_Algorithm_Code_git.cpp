@@ -41,6 +41,7 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 using namespace std;
 #define width 19
 #define height 19
+#define firstSearchNum 7 // 2개의 최적 조합을 찾기위한 탐색개수
 
 
 // "샘플코드[C]"  -> 자신의 팀명 (수정)
@@ -56,7 +57,11 @@ int board[width][height];
 int score[width][height];
 Coord scoreList[400] = { 0 };
 
+Coord battleTop[10][2];		//전장탐색을 하여 가장 좋은 점수가 나온 2개의 돌을 높은 순서대로 저장하는 배열.(cnt가 1이면 한 개의 돌)
+
+
 int showBoard(int x, int y);
+void renewScore();
 
 
 typedef struct {
@@ -68,6 +73,27 @@ typedef struct {
 
 int tempBoard[width][height];
 Coord blocking[10]; //blocking 좌표
+
+
+//상위 3개의 점수를 가진 전장을 찾아내어 배열 battleTop에 저장합니다.
+void battleSearch()
+{
+	int x, y;
+	int totalScore = 0;
+	for (int i = 0; i < firstSearchNum; i++){
+		x = scoreList[i].x;
+		y = scoreList[i].y;
+		totalScore += scoreList[i].score;
+
+		tempBoard[x][y] = 1; //돌을 놔보고 갱신
+		renewScore();
+
+
+	}
+
+
+
+}
 
 
 
@@ -150,7 +176,7 @@ int tempIsFree(int x, int y){
 turn 1 : my turn
 turn 2 : op turn
 */
-void tempMove(int x, int y, int turn){
+void tempMyMove(int x, int y, int turn){
 	if (tempIsFree)
 		tempBoard[x][y] = turn;
 }
