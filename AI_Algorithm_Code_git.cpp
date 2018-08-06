@@ -54,7 +54,10 @@ typedef struct {
 
 int tempBoard[width][height];
 Coord blocking[10];
-Coord battleTop[firstSearchNum] = { 0 };		//전장탐색을 하여 가장 좋은 점수가 나온 2개의 돌을 저장하는 배열
+Coord battleTop[firstSearchNum * firstSearchNum] = { 0 };		//전장탐색을 하여 가장 좋은 점수가 나온 2개의 돌을 저장하는 배열
+void getScore();//board 와 tempboard 에서의 총 점수값을 구합니다.
+void warSearch(int turn);
+
 
 void myturn(int cnt);
 void saveBoard(); // 현재 board를 tempBoard에 저장
@@ -62,34 +65,31 @@ int tempIsFree(int x, int y);
 void tempMyMove(int x, int y, int turn);
 void checkBlocking(); // 블로킹들의 위치저장 , 구조체 배열에 저장
 void changeBlocking(int n, int turn); //n번째 블로킹을 해당 turn의 돌로 변경
-void Minimax(int a, int b, int c); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을 따를 예정. 
+void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을 따를 예정. 
 //domymove() 함수를 통해 둘 돌들의 위치까지 최종적으로 출력함.
 void battleSearch(int tempboard[19][19]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
+int getScore(int bd[]);//board 와 tempboard 에서의 총 점수값을 구합니다.
 void getScore();//board 와 tempboard 에서의 총 점수값을 구합니다.
 void shapeScore();//판의 점수를 관리하는 함수
 bool ifFree(int x, int y);
-void Score();
+void renewScore();
 void domymove();
 void warSearch(int turn);
-
-
 int board[width][height];
 int score[width][height];
 int temp_score[width][height];
-
 int totalScore;
 Coord scoreList[400] = { 0 };
-
 void myturn(int cnt) {
 
 	int x[2], y[2];
-
+	renewScore();
 	saveBoard();						//tempboard에 현재 판을 저장.
 	// 이 부분에서 알고리즘 프로그램(AI)을 작성하십시오. 기본 제공된 코드를 수정 또는 삭제하고 본인이 코드를 사용하시면 됩니다.
 	// 현재 Sample code의 AI는 Random으로 돌을 놓는 Algorithm이 작성되어 있습니다.
 
 	max_score = -10000;
-	Minimax(0, 0, 0);
+	Minimax(0, 0, 0, 0, 0, 0);
 
 
 
@@ -177,22 +177,19 @@ void changeBlocking(int n, int turn) {
 
 	tempBoard[x][y] = turn; //turn : 1 or 2
 }
-
-
 //current_depth는 현재 어떤 깊이까지 트리가 진행되었는지를 의미
 //pos_x와 pos_y는 처음 둘 돌의 위치를 저장
 void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
-	int tempPos_x1;
-	int tempPos_y1;
-	int tempPos_x2;
-	int tempPos_y2;
+	int tempPos_x1 = 0;
+	int tempPos_y1 = 0;
+	int tempPos_x2 = 0;
+	int tempPos_y2 = 0;
 
 	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
 		renewScore();
 		if (max_score < totalScore)
-
 		{
 			max_score = totalScore;
 			pos_x1 = tempPos_x1;
@@ -212,10 +209,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 		turn = (current_depth + 1) % 2;		//depth에 따라 turn이 달라짐.
 		if (turn == 0)
 			turn = 2;
-
 		warSearch(turn);			//전장탐색 알고리즘을 통해 battleTop에 우선순위순서로 둘 돌의 위치를 저장합니다.
-
-
 		//돌두고 Minimax 그리고 돌 지우기
 		for (int i = 0; i < childnum; i++)		//돌을 두어 childnum만큼 tree의 노드를 생성합니다.
 		{
@@ -266,17 +260,14 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 /**
 상위 점수를 가진 전장을 탐색합니다.
+totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 을 넣어줍니다.
 count : 0 , x :0 , y :0 , d: 0 을 넣어줍니다.
 */
-
 void battleSearch(Coord* scoreList, int count, int x, int y, int d, int turn)
 {
-
 	for (int i = 0; i < firstSearchNum; i++){
-		battleTop[count + i].x += 100 * x;			//첫돌의 x , y좌표에는 100이 곱해져있음
+		battleTop[count + i].x += 100 * x;
 		battleTop[count + i].y += 100 * y;
-		battleTop[count + i].score = totalScore;
-
 	}
 
 	for (int i = 0; i < firstSearchNum; i++) {
@@ -286,17 +277,21 @@ void battleSearch(Coord* scoreList, int count, int x, int y, int d, int turn)
 			totalScore = scoreList[i].score;
 			tempBoard[x][y] = turn; //돌을 놔보고 갱신
 			renewScore();
+			tempBoard[x][y] = turn; //돌을 놔보고 갱신
+			renewScore();
 			sortScore();
+			battleSearch(scoreList, i * firstSearchNum, x, y, 1, turn); //첫 번째 돌인경우 재귀호출
+			tempBoard[x][y] = 0;
+			renewScore();
 			battleSearch(scoreList, i * firstSearchNum, x, y, 1, turn); //첫 번째 돌인경우 재귀호출
 			tempBoard[x][y] = 0;
 			renewScore();
 			sortScore();
 		}
-
 		if (d == 1){ //2번째 돌인경우
-			battleTop[count + i].x += scoreList[i].x;		//2번째 돌은 100이하의 숫자로 구성
-
+			battleTop[count + i].x += scoreList[i].x;
 			battleTop[count + i].y += scoreList[i].y;
+			battleTop[count + i].score = totalScore + scoreList[i].score;
 			battleTop[count + i].score = totalScore;
 		}
 	}
@@ -310,22 +305,16 @@ void warSearch(int turn){
 		battleTop[i].y = 0;
 		battleTop[i].score = 0;
 	}
-
 	battleSearch(scoreList, 0, 0, 0, 0, turn);
 	sort(battleTop, battleTop + firstSearchNum * firstSearchNum, compareCoord);
 }
 
+void renewScore(){
 
-//보드판의 총 점수를 받아오는 함수  
-void getScore(int turn){
-	for (int i = 0; i < width; i++){
-		for (int j = 0; j < height; j++)
-			if (turn == 1)totalScore += temp_score[i][j];
-			else totalScore -= score[i][j];
-	}
 }
 
-//판의 점수를 관리하는 함수
-void shapeScore(void) {
+
+int getScore(int bd[width][height]) //점수찾는법 고민중
+{
 
 }
