@@ -66,16 +66,19 @@ void changeBlocking(int n, int turn); //n번째 블로킹을 해당 turn의 돌로 변경
 void Minimax(int a, int b, int c); //Minimax 알고리즘을 통해 둘 돌의 위치를 정하는 함수. dfs 방식을 따를 예정. 
 //domymove() 함수를 통해 둘 돌들의 위치까지 최종적으로 출력함.
 void battleSearch(int tempboard[19][19]);//Minimax 안에서의 전장탐색 알고리즘 - battleTop[] 에 점수 높은 순서대로 저장.
-int getScore(int bd[]);//board 와 tempboard 에서의 총 점수값을 구합니다.
+void getScore();//board 와 tempboard 에서의 총 점수값을 구합니다.
 void shapeScore();//판의 점수를 관리하는 함수
 bool ifFree(int x, int y);
-void renewScore();
+void Score();
 void domymove();
 void warSearch(int turn);
 
 
 int board[width][height];
 int score[width][height];
+int temp_score[width][height];
+
+int totalScore;
 Coord scoreList[400] = { 0 };
 
 void myturn(int cnt) {
@@ -188,7 +191,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
-		int score = getScore(*tempBoard); //tempBoard -> *tempBoard로 수정 , 오류수정부탁
+		// int score = getScore(); //void getScore() , 판의 총 점수는 totalScore로 사용
 		if (max_score < score)
 		{
 			max_score = score;
@@ -257,10 +260,10 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 /**
 상위 점수를 가진 전장을 탐색합니다.
-totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 을 넣어줍니다.
+count : 0 , x :0 , y :0 , d: 0 을 넣어줍니다.
 */
 
-void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int d, int turn)
+void battleSearch(Coord* scoreList, int count, int x, int y, int d, int turn)
 {
 
 	for (int i = 0; i < firstSearchNum; i++){
@@ -273,19 +276,19 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 			x = scoreList[i].x;
 			y = scoreList[i].y;
 			totalScore = scoreList[i].score;
-			board[x][y] = turn; //돌을 놔보고 갱신
-			renewScore();
+			tempBoard[x][y] = turn; //돌을 놔보고 갱신
+			Score();
 			sortScore();
-			battleSearch(scoreList, totalScore, i * firstSearchNum, x, y, 1, turn); //첫 번째 돌인경우 재귀호출
-			board[x][y] = 0;
-			renewScore();
+			battleSearch(scoreList, i * firstSearchNum, x, y, 1, turn); //첫 번째 돌인경우 재귀호출
+			tempBoard[x][y] = 0;
+			Score();
 			sortScore();
 		}
 
 		if (d == 1){ //2번째 돌인경우
 			battleTop[count + i].x += scoreList[i].x;
 			battleTop[count + i].y += scoreList[i].y;
-			battleTop[count + i].score = totalScore + scoreList[i].score;
+			battleTop[count + i].score = totalScore;
 		}
 	}
 	return;
@@ -299,22 +302,17 @@ void warSearch(int turn){
 		battleTop[i].score = 0;
 	}
 
-	battleSearch(scoreList, 0, 0, 0, 0, 0, turn);
+	battleSearch(scoreList, 0, 0, 0, 0, turn);
 	sort(battleTop, battleTop + firstSearchNum * firstSearchNum, compareCoord);
 }
 
 
-//보드판의 총 점수를 받아오는 함수  - tempBoard와 board중 선택
-int getScore(int bd[width][height]) //수정부탁
-{
-	if (bd == tempBoard)
-	{
-
-	}
-
-	else if (bd == board)
-	{
-
+//보드판의 총 점수를 받아오는 함수  
+void getScore(int turn){
+	for (int i = 0; i < width; i++){
+		for (int j = 0; j < height; j++)
+			if (turn == 1)totalScore += temp_score[i][j];
+			else totalScore -= score[i][j];
 	}
 }
 
