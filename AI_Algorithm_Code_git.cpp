@@ -41,13 +41,16 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include "Connect6Algo.h"
 #include <algorithm>
 
+//minimax 관련상수
 #define firstSearchNum 7
 #define childNum 3
 #define depth 4
+
+
+//Board 관련상수
 #define width 19
 #define height 19
 #define BOARD_SIZE 19
-
 
 //Minimax 관련 변수
 int tempX[2];
@@ -62,14 +65,6 @@ int temp_score[BOARD_SIZE][BOARD_SIZE];
 void renewScore(int su);
 int isRev = 0;
 
-
-
-//상수값
-#define firstSearchNum 7
-#define childNum 3
-#define depth 4
-#define width 19
-#define height 19
 
 
 //getScore 관련함수
@@ -180,14 +175,14 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 
 //상위 점수를 가진 전장을 찾아내어 배열 battleTop에 Sort하여 저장합니다.
 void warSearch(int turn){
-	renewScore(0);
-	sortScore();
+
 	for (int i = 0; i < firstSearchNum * firstSearchNum; i++){
 		battleTop[i].x = 0;
 		battleTop[i].y = 0;
 		battleTop[i].score = 0;
 	}
-
+	renewScore(0);
+	sortScore();
 
 	battleSearch(scoreList, 0, 0, 0, 0, 0, turn);
 	sort(battleTop, battleTop + firstSearchNum * firstSearchNum, compareCoord);
