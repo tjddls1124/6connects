@@ -2593,7 +2593,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
-		int totalScore = getScore();				//renewScore에서 totalScore변경하게 확인.
+		int totalScore = getScore2();				//renewScore에서 totalScore변경하게 확인.
 
 		if (max_score < totalScore)				//더 점수가 높으면
 		{
@@ -2612,8 +2612,8 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 	else
 	{
 		//6목을 내가 만들었으면 더 탐색하지 않고 종료
-		if (max_score == 100000)
-			return;
+		//if (max_score == 100000)
+			//return;
 
 		//현재 돌을 놓고 Minimax로 들어온 상태		
 		if (getScore2() > 5000)		//내 돌이 6개가 있으면
