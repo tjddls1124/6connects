@@ -41,6 +41,14 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include "Connect6Algo.h"
 #include <algorithm>
 
+//구조체 선언
+typedef struct {
+	int x;
+	int y;
+	int score;
+}Coord;
+
+
 //minimax 관련상수
 #define firstSearchNum 7
 #define childNum 3
@@ -66,6 +74,11 @@ void renewScore(int su);
 int isRev = 0;
 
 
+//Block 관련
+int blockCount = 0;
+void changeBlock();
+Coord blocks[10] = {};
+
 
 //getScore 관련함수
 int getScore();
@@ -74,6 +87,15 @@ void valueVerticle();
 void valueDiagonal1();
 void valueDiagonal2();
 void reverse();
+
+
+
+//getScore2 관련
+int getScore2();
+bool isEndPosition = false;
+int boardSum = 0;
+
+
 
 //평가점수 관련 변수
 int my_con[8] = { 0, 0, 2, 4, 10, 10, 100, -100 };      //연속된 돌
@@ -94,11 +116,6 @@ int slpNum[3][7] = { 0 };
 int valueTurn;
 
 
-typedef struct {
-	int x;
-	int y;
-	int score;
-}Coord;
 
 Coord scoreList[361] = { 0 };
 Coord battleTop[firstSearchNum * firstSearchNum] = { 0 };
@@ -189,13 +206,28 @@ void warSearch(int turn){
 }
 
 
+void changeBlock(){// 블록을 무조건 1번으로 처리
+	for (int i = 0; i < blockCount; i++){
+		tempBoard[blocks[i].x][blocks[i].y] = 1;
 
+	}
+}
 
 void saveBoard(){ // 현재 board를 tempBoard에 저장
+	blockCount = 0;
 	for (int i = 0; i < 19; i++){
-		for (int j = 0; j < 19; j++)
+		for (int j = 0; j < 19; j++){
+			if (showBoard(i, j) == 3) {
+				//블록리스트에 저장
+				blocks[blockCount].x = i;
+				blocks[blockCount].y = j;
+				blockCount++;
+			}
 			tempBoard[i][j] = showBoard(i, j);
+		}
 	}
+	//블록을 1로 변환
+	changeBlock();
 }
 
 int showScore(int x, int y)
@@ -732,6 +764,8 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -1273,6 +1307,8 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -1813,6 +1849,8 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -2353,6 +2391,8 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	default:
 		break;
@@ -2532,10 +2572,10 @@ void deleteTempMove(int x, int y)
 	tempBoard[x][y] = 0;
 }
 
-void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt, int blockNum)
+void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
 	//블럭이 없는 첫수이면 중앙에 두기
-	if (blockNum == 0 && cnt == 1)
+	if (blockCount == 0 && cnt == 1)
 	{
 		tempX[0] = 9;
 		tempY[0] = 9;
@@ -2551,7 +2591,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
-		int totalScore = getScore();				//renewScore에서 totalScore변경하게 확인.
+		int totalScore = getScore2();				//renewScore에서 totalScore변경하게 확인.
 
 		if (max_score < totalScore)				//더 점수가 높으면
 		{
@@ -2618,7 +2658,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			if (turn == 1)
 				reverse();			//반전 돌려놓기
 
-			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt, 0);
+			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
 
 
 
@@ -2640,88 +2680,6 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 	}
 }
 
-int getScore() //현재판의 평가점수를 리턴합니다.
-{
-	int value = 0;
-	int my_value = 0;
-	int op_value = 0;
-
-
-	//1번은 my, 2번은 op의 점수
-
-	//돌의 모양에 따른 평가 점수를 생성합니다.
-
-	//점수 개수 초기화
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 8; j++)
-			conNum[i][j] = 0;
-
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 7; j++)
-			indNum[i][j] = 0;
-
-
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 7; j++)
-			slpNum[i][j] = 0;
-
-
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 7; j++)
-			jumNum[i][j] = 0;
-
-
-
-	//반전 이전이므로, 1번, 즉, 자신의 옵션으로 점수 생성
-	valueTurn = 1;
-
-	valueHorizon();
-
-	valueVerticle();
-
-	valueDiagonal1();
-
-	valueDiagonal2();
-
-	for (int i = 0; i < 8; i++)
-		my_value += my_con[i] * conNum[1][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		my_value += my_ind[i] * indNum[1][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		my_value += my_jump[i] * jumNum[1][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		my_value += my_slp[i] * slpNum[1][i];		//점수 * 개수
-
-	reverse();		//최초 반전
-
-	//반전 이후이므로 2번, 즉, 상대방 옵션으로 점수 생성	
-	valueTurn = 2;
-
-	valueHorizon();
-
-	valueVerticle();
-
-	valueDiagonal1();
-
-	valueDiagonal2();
-
-	reverse();	//반전 원상복귀
-
-
-	for (int i = 0; i < 8; i++)
-		op_value += op_con[i] * conNum[2][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		op_value += op_ind[i] * indNum[2][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		op_value += op_jump[i] * jumNum[2][i];		//점수 * 개수
-	for (int i = 0; i < 7; i++)
-		op_value += op_slp[i] * slpNum[2][i];		//점수 * 개수
-
-	value = my_value + op_value;
-
-	return value;
-
-}
 
 //모양에 따른 모양을 가져옵니다.
 void value_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l)
@@ -3190,7 +3148,6 @@ void value_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case 61: jumNum[valueTurn][5]++;
 		break;
 	case 62: conNum[valueTurn][5]++;
-		break;
 	case 63: conNum[valueTurn][6]++;
 		break;
 	default:
@@ -3368,6 +3325,14 @@ void init_tmpScore(){
 	}
 }
 
+void cal(int su){
+	verticle(su);
+	horizon(su);
+	diagonal1(su);
+	diagonal2(su);
+}
+
+
 void tmp_score(){
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
@@ -3375,6 +3340,124 @@ void tmp_score(){
 		}
 	}
 }
+
+int getScore2(){
+	int su = 0;
+	boardSum = 0;
+	init_Score();
+	init_tmpScore();
+	cal(su);
+	tmp_score();
+	reverse();
+	init_Score();
+	cal(su);
+
+	for (int i = 0; i < width; i++){ //반전시킨 점수를 뺀 뒤,
+		for (int j = 0; j < height; j++){
+			score[i][j] -= temp_score[i][j];
+		}
+	}
+
+
+	for (int i = 0; i < width; i++){ // 보드판의 모든 스코어를 총합
+		for (int j = 0; j < height; j++){
+			if (tempBoard[i][j] != 0){
+				boardSum += score[i][j];
+			}
+		}
+	}
+	reverse();
+
+	//초기화
+	init_Score();
+	init_tmpScore();
+
+	return boardSum;
+}
+
+int getScore() //현재판의 평가점수를 리턴합니다.
+{
+	int value = 0;
+	int my_value = 0;
+	int op_value = 0;
+
+
+	//1번은 my, 2번은 op의 점수
+
+	//돌의 모양에 따른 평가 점수를 생성합니다.
+
+	//점수 개수 초기화
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 8; j++)
+			conNum[i][j] = 0;
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 7; j++)
+			indNum[i][j] = 0;
+
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 7; j++)
+			slpNum[i][j] = 0;
+
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 7; j++)
+			jumNum[i][j] = 0;
+
+
+
+	//반전 이전이므로, 1번, 즉, 자신의 옵션으로 점수 생성
+	valueTurn = 1;
+
+	valueHorizon();
+
+	valueVerticle();
+
+	valueDiagonal1();
+
+	valueDiagonal2();
+
+	for (int i = 0; i < 8; i++)
+		my_value += my_con[i] * conNum[1][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		my_value += my_ind[i] * indNum[1][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		my_value += my_jump[i] * jumNum[1][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		my_value += my_slp[i] * slpNum[1][i];		//점수 * 개수
+
+	reverse();		//최초 반전
+
+	//반전 이후이므로 2번, 즉, 상대방 옵션으로 점수 생성	
+	valueTurn = 2;
+
+	valueHorizon();
+
+	valueVerticle();
+
+	valueDiagonal1();
+
+	valueDiagonal2();
+
+	reverse();	//반전 원상복귀
+
+
+	for (int i = 0; i < 8; i++)
+		op_value += op_con[i] * conNum[2][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		op_value += op_ind[i] * indNum[2][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		op_value += op_jump[i] * jumNum[2][i];		//점수 * 개수
+	for (int i = 0; i < 7; i++)
+		op_value += op_slp[i] * slpNum[2][i];		//점수 * 개수
+
+	value = my_value + op_value;
+
+	return value;
+
+}
+
 
 void reverse(){
 	for (int i = 0; i < width; i++){
@@ -3387,14 +3470,9 @@ void reverse(){
 			}
 		}
 	}
+	changeBlock();// block처리하도록 변경
 	if (isRev == 0) isRev = 1;
 	else isRev = 0;
-}
-void cal(int su){
-	verticle(su);
-	horizon(su);
-	diagonal1(su);
-	diagonal2(su);
 }
 void renewScore(int su){
 	init_Score();
@@ -3425,7 +3503,7 @@ void minmin(int cnt)
 	int x[2], y[2];
 
 	max_score = -10000;
-	Minimax(0, 0, 0, 0, 0, cnt, 0);
+	Minimax(0, 0, 0, 0, 0, cnt);
 	for (int i = 0; i < 2; i++){
 		x[i] = tempX[i];
 		y[i] = tempY[i];
