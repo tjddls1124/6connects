@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <algorithm>
 #define BOARD_SIZE 20
-#define childNum 3
-#define depth 4
+#define childNum 1
+#define depth 1
 
 int width = 19, height = 19;
 int board[BOARD_SIZE][BOARD_SIZE];
@@ -3357,18 +3357,15 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			//	print_bas();
 
 
-			if (turn == 1)			//내 턴이면 반전시켜서 전장탐색 실행
+			if (turn == 2)			//내 턴이면 반전시켜서 전장탐색 실행
 				reverse();			//반전
 
 			warSearch(turn);
 
-			if (turn == 1)
+			if (turn == 2)
 				reverse();			//반전 돌려놓기
 
 			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
-
-
-
 
 			for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
 			{
@@ -3379,8 +3376,13 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 					deleteTempMove(tempPos_x2, tempPos_y2);		//두 번째 돌 지우기
 			}
 
-			warSearch(turn);
+			if (turn == 2)
+				reverse();
 
+			warSearch(turn);
+			
+			if (turn == 2)
+				reverse();
 
 			//	print_bas();
 		}
@@ -3518,14 +3520,19 @@ void main()
 	//board[7][9] = 3;
 
 	saveBoard();
-
+	
 	renewScore(0);
 	print_bas();
 
 	while (input == 0) {
 
+		if (t == 2)
+			reverse();
+		
 		warSearch(t);
 
+		if (t == 2)
+			reverse();
 		/*
 		x[0] = battleTop[0].x / 100;
 		y[0] = battleTop[0].y / 100;
@@ -3537,9 +3544,16 @@ void main()
 		printf("%d, %d    %d, %d , %d점\n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[2].score);
 
 		max_score = -10000;
+		
 		if (t == 2)
 			reverse();
+		
 		Minimax(0, 0, 0, 0, 0, 2);
+
+		if (t == 2)
+			reverse();
+
+
 		printf("temp : %d %d,  %d %d", tempX[0], tempY[0], tempX[1], tempY[1]);
 
 		printf("\nturn : %d ( 1 : black , 2 : white)\n", t); //
