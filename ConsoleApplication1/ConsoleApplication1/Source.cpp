@@ -10,6 +10,7 @@ int tempBoard[BOARD_SIZE][BOARD_SIZE];
 int score[BOARD_SIZE][BOARD_SIZE];
 int totalScore;
 int temp_score[BOARD_SIZE][BOARD_SIZE];
+int boardSum;
 #define firstSearchNum 7
 void renewScore(int su);
 void deleteMove(int turn, int x, int y);
@@ -43,6 +44,7 @@ void valueVerticle();
 void valueDiagonal1();
 void valueDiagonal2();
 void reverse();
+int getScore2();
 
 
 int tempX[2];
@@ -50,15 +52,15 @@ int tempY[2];
 
 
 //평가점수 관련 변수
-int my_con[8] = { 0, 0, 2, 4, 10, 10, 100, -100 };      //연속된 돌
+int my_con[8] = { 0, 0, 2, 4, 10, 1000, 1000, -1000 };      //연속된 돌
 int my_slp[7] = { 0, 0, 0, 4, 6, 8, 0 };   //한쪽이 막힌 돌
 int my_ind[7] = { 0, 0, 0, 4, 6, 8, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
 int my_jump[7] = { 0, 0, 0, 5, 7, 9, 0 };   //띈 돌
 
-int op_con[8] = { 0, 0, 0, -9, -100, -100, -100, 100 };      //연속된 돌
+int op_con[8] = { 0, 0, 0, -9, -1000, -1000, -1000, 1000 };      //연속된 돌
 int op_slp[7] = { 0, 0, 0, -6, -8, 0, 0 };   //한쪽이 막힌 돌
-int op_ind[7] = { 0, 0, 0 - 6, -8, -100, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
-int op_jump[7] = { 0, 0, 0, -8, -100, -100, 0 };   //띈 돌
+int op_ind[7] = { 0, 0, 0 - 6, -8, -1000, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
+int op_jump[7] = { 0, 0, 0, -8, -1000, -1000, 0 };   //띈 돌
 
 //각 점수들의 개수를 저장하는 변수 배열 생성
 int conNum[3][8] = { 0 };
@@ -219,6 +221,8 @@ void value_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		break;
 	case 62: slpNum[valueTurn][5]++;
 		break;
+	case 63: indNum[valueTurn][5]++;
+		break;
 	default:
 		break;
 	}
@@ -327,6 +331,8 @@ void value_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case 61: indNum[valueTurn][5]++;
 		break;
 	case 62: slpNum[valueTurn][5]++;
+		break;
+	case 63: indNum[valueTurn][5]++;
 		break;
 	default:
 		break;
@@ -437,6 +443,8 @@ void value_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 	case 61: indNum[valueTurn][5]++;
 		break;
 	case 62: indNum[valueTurn][5]++;
+		break;
+	case 63: indNum[valueTurn][5]++;
 		break;
 	default:
 		break;
@@ -575,9 +583,9 @@ void value_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case 61: jumNum[valueTurn][5]++;
 		break;
 	case 62: conNum[valueTurn][5]++;
-
 		break;
-
+	case 63: indNum[valueTurn][5]++;
+		break;
 		break;
 
 	default:
@@ -1383,6 +1391,8 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -1924,6 +1934,8 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -2464,6 +2476,8 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -3004,6 +3018,8 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
+		boardSum += 10000;
+		if (isRev) boardSum -= 10000;
 		break;
 	default:
 		break;
@@ -3239,16 +3255,28 @@ void renewScore(int su){
 
 void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
+
+	//블럭이 없는 첫수이면 중앙에 두기
+	if (blockCount == 0 && cnt == 1)
+	{
+		tempX[0] = 9;
+		tempY[0] = 9;
+		tempX[1] = 0;
+		tempY[1] = 0;
+		return;
+	}
+
+	//초기화 - 두는 위치 임시 저장할 변수
 	int tempPos_x1 = 0;
 	int tempPos_y1 = 0;
 	int tempPos_x2 = 0;
 	int tempPos_y2 = 0;
 
-	if (current_depth == depth)      //depth까지 내려갔으면 종료
+	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
-		int totalScore = getScore();            //renewScore에서 totalScore변경하게 확인.
+		int totalScore = getScore();				//renewScore에서 totalScore변경하게 확인.
 
-		if (max_score < totalScore)            //더 점수가 높으면
+		if (max_score < totalScore)				//더 점수가 높으면
 		{
 			max_score = totalScore;
 			tempX[0] = pos_x1;
@@ -3264,21 +3292,42 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	else
 	{
-		int turn;
-		turn = (current_depth + 1) % 2;      //depth에 따라 turn이 달라짐.
+		//현재 돌을 놓고 Minimax로 들어온 상태		
+		if (getScore2() > 5000)		//내 돌이 6개가 있으면
+		{							//처음 둔 돌 저장 , Minimax 완전히 종료
+			tempX[0] = pos_x1;
+			tempY[0] = pos_y1;
+			tempX[1] = pos_x2;
+			tempY[1] = pos_y2;
+			max_score = 100000;
+			return;
+		}
+
+		//6목을 내가 만들었으면 더 탐색하지 않고 종료
+		if (max_score == 100000)
+			return;
+
+		if (getScore2() < -5000)		//상대 돌이 6개가 있으면
+		{
+			return;						//이번 Minimax만 종료
+		}
+
+		int turn = (current_depth + 1) % 2;		//depth에 따라 turn이 달라짐.
+
 		if (turn == 0)
 			turn = 2;
+
 		//돌두고 Minimax 그리고 돌 지우기
-		for (int i = 0; i < childNum; i++)      //돌을 두어 childnum만큼 tree의 노드를 생성합니다.
+		for (int i = 0; i < childNum; i++)		//돌을 두어 childnum만큼 tree의 노드를 생성합니다.
 		{
+			//6목을 내가 만들었으면 더 탐색하지 않고 종료
+			if (max_score == 100000)
+				return;
+
 			// 처음 두는 돌의 위치를 저장.
 			if (current_depth == 0)
 			{
-				if (turn == 2)         //op턴일 경우 reverse
-					reverse();
-
-				warSearch(turn);      //warSearch로 battleTop찾으면
-
+				warSearch(turn);
 
 				pos_x1 = battleTop[i].x / 100;
 				pos_y1 = battleTop[i].y / 100;
@@ -3296,35 +3345,38 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			tempPos_y2 = battleTop[i].y % 100;
 
 
-			for (int C = 1; C <= cnt; C++)      //cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+			for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
 			{
 				if (C == 1)
-					tempMyMove(tempPos_x1, tempPos_y1, turn);      //첫 번째 돌 두기
+					tempMyMove(tempPos_x1, tempPos_y1, turn);		//첫 번째 돌 두기
 
 				if (C == 2)
-					tempMyMove(tempPos_x2, tempPos_y2, turn);      //두 번째 돌 두기
+					tempMyMove(tempPos_x2, tempPos_y2, turn);		//두 번째 돌 두기
 			}
+
 			//	print_bas();
 
 
-			if (turn == 2)
-				reverse();         //반전 돌려놓기
+			if (turn == 1)			//내 턴이면 반전시켜서 전장탐색 실행
+				reverse();			//반전
 
 			warSearch(turn);
 
-			if (turn == 2)
-				reverse();         //반전 돌려놓기
+			if (turn == 1)
+				reverse();			//반전 돌려놓기
 
 			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
 
 
-			for (int C = 1; C <= cnt; C++)      //cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+
+
+			for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
 			{
 				if (C == 1)
-					deleteTempMove(tempPos_x1, tempPos_y1);      //첫 번째 돌 지우기
+					deleteTempMove(tempPos_x1, tempPos_y1);		//첫 번째 돌 지우기
 
 				if (C == 2)
-					deleteTempMove(tempPos_x2, tempPos_y2);      //두 번째 돌 지우기
+					deleteTempMove(tempPos_x2, tempPos_y2);		//두 번째 돌 지우기
 			}
 
 			warSearch(turn);
@@ -3418,6 +3470,40 @@ int getScore() //현재판의 평가점수를 리턴합니다.
 
 }
 
+int getScore2(){
+	int su = 0;
+	boardSum = 0;
+	init_Score();
+	init_tmpScore();
+	cal(su);
+	tmp_score();
+	reverse();
+	init_Score();
+	cal(su);
+
+	for (int i = 0; i < width; i++){ //반전시킨 점수를 뺀 뒤,
+		for (int j = 0; j < height; j++){
+			score[i][j] -= temp_score[i][j];
+		}
+	}
+
+
+	for (int i = 0; i < width; i++){ // 보드판의 모든 스코어를 총합
+		for (int j = 0; j < height; j++){
+			if (tempBoard[i][j] != 0){
+				boardSum += score[i][j];
+			}
+		}
+	}
+	reverse();
+
+	//초기화
+	init_Score();
+	init_tmpScore();
+
+	return boardSum;
+}
+
 
 //모양에 따른 모양을 가져옵니다.
 void main()
@@ -3428,8 +3514,8 @@ void main()
 	board[9][9] = 2;
 
 	//블럭지정
-	board[8][9] = 3;
-	board[7][9] = 3;
+	//board[8][9] = 3;
+	//board[7][9] = 3;
 
 	saveBoard();
 
@@ -3451,33 +3537,59 @@ void main()
 		printf("%d, %d    %d, %d , %d점\n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[2].score);
 
 		max_score = -10000;
+		if (t == 2)
+			reverse();
 		Minimax(0, 0, 0, 0, 0, 2);
 		printf("temp : %d %d,  %d %d", tempX[0], tempY[0], tempX[1], tempY[1]);
 
 		printf("\nturn : %d ( 1 : black , 2 : white)\n", t); //
-		printf("놓을 돌의 좌표를 입력하세요 : \n");
+		printf("놓을 돌의 좌표를 입력하세요 : (temp돌로 놓으려면 1을 입력하세요\n");
 		printf(" x1 y1 : ");
-		scanf_s(" %d %d", &x[0], &y[0]);
+		int temp_put;
+		scanf_s("%d", &temp_put);
+		
+		//a 입력시 temp로 나온 돌로 그냥 진행, 다른 키 입력시 2개 입력받아서 직접 두는 걸로 진행
+		if (temp_put == 1)
+		{
+			x[0] = tempX[0];
+			y[0] = tempY[0];
+			x[1] = tempX[1];
+			y[1] = tempY[1];
 
-		board[x[0]][y[0]] = t;
-		saveBoard();
+			board[x[0]][y[0]] = t;
+			board[x[1]][y[1]] = t;
+			saveBoard();
+			renewScore(0);
+			sortScore();
+			print_bas();
 
-		renewScore(0);
-		sortScore();
-		print_bas();
+			if (t == 2) t = 1;
+			else t = 2;
+		}
+		else
+		{
+			scanf_s(" %d %d", &x[0], &y[0]);
 
-		printf(" x2 y2 : ");
+			board[x[0]][y[0]] = t;
+			saveBoard();
 
-		scanf_s(" %d %d", &x[1], &y[1]);
+			renewScore(0);
+			sortScore();
+			print_bas();
 
-		board[x[1]][y[1]] = t;
-		saveBoard();
+			printf(" x2 y2 : ");
 
-		renewScore(0);
-		sortScore();
-		print_bas();
+			scanf_s(" %d %d", &x[1], &y[1]);
 
-		if (t == 2) t = 1;
-		else t = 2;
+			board[x[1]][y[1]] = t;
+			saveBoard();
+
+			renewScore(0);
+			sortScore();
+			print_bas();
+
+			if (t == 2) t = 1;
+			else t = 2;
+		}
 	}
 }
