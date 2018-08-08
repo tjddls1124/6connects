@@ -5,6 +5,7 @@
 #define depth 4
 
 int width = 19, height = 19;
+int board[BOARD_SIZE][BOARD_SIZE];
 int tempBoard[BOARD_SIZE][BOARD_SIZE];
 int score[BOARD_SIZE][BOARD_SIZE];
 int totalScore;
@@ -43,6 +44,7 @@ void valueDiagonal1();
 void valueDiagonal2();
 void reverse();
 
+
 int tempX[2];
 int tempY[2];
 
@@ -65,7 +67,39 @@ int jumNum[3][7] = { 0 };
 int slpNum[3][7] = { 0 };
 int valueTurn;
 
+//Block 관련
+int blockCount = 0;
+void changeBlock();
+Coord blocks[10] = {};
 
+int showBoard(int x, int y) {
+	return board[x][y];
+}
+
+
+void changeBlock(){// 블록을 무조건 1번으로 처리
+	for (int i = 0; i < blockCount; i++){
+		tempBoard[blocks[i].x][blocks[i].y] = 1;
+
+	}
+}
+
+void saveBoard(){ // 현재 board를 tempBoard에 저장
+	blockCount = 0;
+	for (int i = 0; i < 19; i++){
+		for (int j = 0; j < 19; j++){
+			if (showBoard(i, j) == 3) {
+				//블록리스트에 저장
+				blocks[blockCount].x = i;
+				blocks[blockCount].y = j;
+				blockCount++;
+			}
+			tempBoard[i][j] = showBoard(i, j);
+		}
+	}
+	//블록을 1로 변환
+	changeBlock();
+}
 
 int tempIsFree(int x, int y) {
 	return x >= 0 && y >= 0 && x < width && y < height && tempBoard[x][y] == 0;
@@ -808,9 +842,9 @@ void print_bas()
 		for (int j = 0; j < height; ++j)
 		{
 
-			if (tempBoard[i][j] == 1) printf("  %2s", "●");
-			else if (tempBoard[i][j] == 2) printf("  %2s", "○");
-			else if (tempBoard[i][j] == 3) printf("  %2s", "*");
+			if (board[i][j] == 1) printf("  %2s", "●");
+			else if (board[i][j] == 2) printf("  %2s", "○");
+			else if (board[i][j] == 3) printf("  %2s", "*");
 			else printf("%4d", score[i][j]);
 		}
 		printf("\n\n");
@@ -3166,6 +3200,7 @@ void reverse(){
 			}
 		}
 	}
+	changeBlock();// block처리하도록 변경
 	if (isRev == 0) isRev = 1;
 	else isRev = 0;
 }
@@ -3269,7 +3304,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 				if (C == 2)
 					tempMyMove(tempPos_x2, tempPos_y2, turn);      //두 번째 돌 두기
 			}
-		//	print_bas();
+			//	print_bas();
 
 
 			if (turn == 2)
@@ -3295,7 +3330,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			warSearch(turn);
 
 
-		//	print_bas();
+			//	print_bas();
 		}
 	}
 }
@@ -3390,14 +3425,20 @@ void main()
 	int x[2], y[2];
 	int input = 0;
 	int t = 1;
-	tempBoard[9][9] = 2;
+	board[9][9] = 2;
+
+	//블럭지정
+	board[8][9] = 3;
+	board[7][9] = 3;
+
+	saveBoard();
 
 	renewScore(0);
 	print_bas();
 
 	while (input == 0) {
 
-		warSearch(1);
+		warSearch(t);
 
 		/*
 		x[0] = battleTop[0].x / 100;
@@ -3406,8 +3447,8 @@ void main()
 		y[1] = battleTop[0].y % 100;
 		*/
 		printf("%d, %d    %d, %d , %d점\n", battleTop[0].x / 100, battleTop[0].y / 100, battleTop[0].x % 100, battleTop[0].y % 100, battleTop[0].score);
-		printf("%d, %d    %d, %d , %d점\n", battleTop[1].x / 100, battleTop[1].y / 100, battleTop[1].x % 100, battleTop[1].y % 100, battleTop[0].score);
-		printf("%d, %d    %d, %d , %d점\n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[0].score);
+		printf("%d, %d    %d, %d , %d점\n", battleTop[1].x / 100, battleTop[1].y / 100, battleTop[1].x % 100, battleTop[1].y % 100, battleTop[1].score);
+		printf("%d, %d    %d, %d , %d점\n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[2].score);
 
 		max_score = -10000;
 		Minimax(0, 0, 0, 0, 0, 2);
@@ -3418,8 +3459,8 @@ void main()
 		printf(" x1 y1 : ");
 		scanf_s(" %d %d", &x[0], &y[0]);
 
-		tempBoard[x[0]][y[0]] = t;
-
+		board[x[0]][y[0]] = t;
+		saveBoard();
 
 		renewScore(0);
 		sortScore();
@@ -3429,7 +3470,8 @@ void main()
 
 		scanf_s(" %d %d", &x[1], &y[1]);
 
-		tempBoard[x[1]][y[1]] = t;
+		board[x[1]][y[1]] = t;
+		saveBoard();
 
 		renewScore(0);
 		sortScore();
