@@ -41,6 +41,14 @@ int showBoard(int x, int y) : [x, y] 좌표에 무슨 돌이 존재하는지 보여주는 함수 (
 #include "Connect6Algo.h"
 #include <algorithm>
 
+//구조체 선언
+typedef struct {
+	int x;
+	int y;
+	int score;
+}Coord;
+
+
 //minimax 관련상수
 #define firstSearchNum 7
 #define childNum 3
@@ -64,6 +72,13 @@ int score[BOARD_SIZE][BOARD_SIZE];
 int temp_score[BOARD_SIZE][BOARD_SIZE];
 void renewScore(int su);
 int isRev = 0;
+
+
+//Block 관련
+int blockCount = 0;
+void changeBlock();
+Coord blocks[10] = {};
+
 
 
 
@@ -94,11 +109,6 @@ int slpNum[3][7] = { 0 };
 int valueTurn;
 
 
-typedef struct {
-	int x;
-	int y;
-	int score;
-}Coord;
 
 Coord scoreList[361] = { 0 };
 Coord battleTop[firstSearchNum * firstSearchNum] = { 0 };
@@ -189,13 +199,28 @@ void warSearch(int turn){
 }
 
 
+void changeBlock(){// 블록을 무조건 1번으로 처리
+	for (int i = 0; i < blockCount; i++){
+		tempBoard[blocks[i].x][blocks[i].y] = 1;
 
+	}
+}
 
 void saveBoard(){ // 현재 board를 tempBoard에 저장
+	blockCount = 0;
 	for (int i = 0; i < 19; i++){
-		for (int j = 0; j < 19; j++)
+		for (int j = 0; j < 19; j++){
+			if (showBoard(i, j) == 3) {
+				//블록리스트에 저장
+				blocks[blockCount].x = i;
+				blocks[blockCount].y = j;
+				blockCount++;
+			}
 			tempBoard[i][j] = showBoard(i, j);
+		}
 	}
+	//블록을 1로 변환
+	changeBlock();
 }
 
 int showScore(int x, int y)
@@ -2532,10 +2557,10 @@ void deleteTempMove(int x, int y)
 	tempBoard[x][y] = 0;
 }
 
-void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt, int blockNum)
+void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
 	//블럭이 없는 첫수이면 중앙에 두기
-	if (blockNum == 0 && cnt == 1)
+	if (blockCount == 0 && cnt == 1)
 	{
 		tempX[0] = 9;
 		tempY[0] = 9;
@@ -2618,7 +2643,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			if (turn == 1)
 				reverse();			//반전 돌려놓기
 
-			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt, 0);
+			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
 
 
 
@@ -3372,6 +3397,7 @@ void tmp_score(){
 	}
 }
 
+
 void reverse(){
 	for (int i = 0; i < width; i++){
 		for (int j = 0; j < height; j++){
@@ -3383,6 +3409,7 @@ void reverse(){
 			}
 		}
 	}
+	changeBlock();// block처리하도록 변경
 	if (isRev == 0) isRev = 1;
 	else isRev = 0;
 }
@@ -3421,7 +3448,7 @@ void minmin(int cnt)
 	int x[2], y[2];
 
 	max_score = -10000;
-	Minimax(0, 0, 0, 0, 0, cnt, 0);
+	Minimax(0, 0, 0, 0, 0, cnt);
 	for (int i = 0; i < 2; i++){
 		x[i] = tempX[i];
 		y[i] = tempY[i];
