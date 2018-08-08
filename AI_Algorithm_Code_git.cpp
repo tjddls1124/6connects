@@ -2574,6 +2574,7 @@ void deleteTempMove(int x, int y)
 
 void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
+
 	//블럭이 없는 첫수이면 중앙에 두기
 	if (blockCount == 0 && cnt == 1)
 	{
@@ -2584,6 +2585,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 		return;
 	}
 
+	//초기화 - 두는 위치 임시 저장할 변수
 	int tempPos_x1 = 0;
 	int tempPos_y1 = 0;
 	int tempPos_x2 = 0;
@@ -2609,6 +2611,10 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	else
 	{
+		//6목을 내가 만들었으면 더 탐색하지 않고 종료
+		if (max_score == 100000)
+			return;
+
 		//현재 돌을 놓고 Minimax로 들어온 상태		
 		if (getScore2() > 5000)		//내 돌이 6개가 있으면
 		{							//처음 둔 돌 저장 , Minimax 완전히 종료
