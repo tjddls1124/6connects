@@ -98,15 +98,15 @@ int boardSum = 0;
 
 
 //평가점수 관련 변수
-int my_con[8] = { 0, 0, 2, 4, 10, 10, 100, -100 };      //연속된 돌
+int my_con[8] = { 0, 0, 2, 4, 10, 10, 1000, -1000 };      //연속된 돌
 int my_slp[7] = { 0, 0, 0, 4, 6, 7, 0 };   //한쪽이 막힌 돌
 int my_ind[7] = { 0, 0, 0, 4, 6, 7, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
 int my_jump[7] = { 0, 0, 0, 5, 7, 8, 0 };   //띈 돌
 
-int op_con[8] = { 0, 0, 0, -9, -100, -100, -100, 100 };      //연속된 돌
+int op_con[8] = { 0, 0, 0, -9, -1000, -1000, -1000, 1000 };      //연속된 돌
 int op_slp[7] = { 0, 0, 0, -6, -8, 0, 0 };   //한쪽이 막힌 돌
-int op_ind[7] = { 0, 0, 0 - 6, -8, -100, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
-int op_jump[7] = { 0, 0, 0, -8, -100, -100, 0 };   //띈 돌
+int op_ind[7] = { 0, 0, 0 - 6, -8, -1000, 0 };   //애매한 돌(한쪽이 막히고 띄어진 돌)
+int op_jump[7] = { 0, 0, 0, -8, -1000, -1000, 0 };   //띈 돌
 
 //각 점수들의 개수를 저장하는 변수 배열 생성
 int conNum[3][8] = { 0 };
@@ -2591,7 +2591,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	if (current_depth == depth)		//depth까지 내려갔으면 종료
 	{
-		int totalScore = getScore2();				//renewScore에서 totalScore변경하게 확인.
+		int totalScore = getScore();				//renewScore에서 totalScore변경하게 확인.
 
 		if (max_score < totalScore)				//더 점수가 높으면
 		{
@@ -2609,6 +2609,21 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	else
 	{
+		//현재 돌을 놓고 Minimax로 들어온 상태		
+		if (getScore2() > 5000)		//내 돌이 6개가 있으면
+		{							//처음 둔 돌 저장 , Minimax 완전히 종료
+			tempX[0] = pos_x1;
+			tempY[0] = pos_y1;
+			tempX[1] = pos_x2;
+			tempY[1] = pos_y2;
+			max_score = 100000;
+			return;
+		}
+
+		if (getScore2() < -5000)		//상대 돌이 6개가 있으면
+		{
+			return;						//이번 Minimax만 종료
+		}
 		int turn = (current_depth + 1) % 2;		//depth에 따라 turn이 달라짐.
 
 		if (turn == 0)
@@ -2650,7 +2665,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			//	print_bas();
 
 
-			if (turn == 1)			//내 턴이면 반전시켜서 미니맥스 실행
+			if (turn == 1)			//내 턴이면 반전시켜서 전장탐색 실행
 				reverse();			//반전
 
 			warSearch(turn);
