@@ -51,8 +51,8 @@ typedef struct {
 
 //minimax 관련상수
 #define firstSearchNum 7
-#define childNum 1
-#define depth 1
+#define childNum 4
+#define depth 3
 
 
 //Board 관련상수
@@ -125,6 +125,8 @@ using namespace std;
 
 
 void opScoreChange(int a, int b, int my_score, int su){
+	// 돌 4개의 경우
+
 	if (su == 0 && isRev == 0) { // 첫번째 수, 내돌
 		score[a][b] += my_score + 500;
 	}
@@ -135,6 +137,24 @@ void opScoreChange(int a, int b, int my_score, int su){
 	else if (su == 1 && isRev == 1) //두번째 수, 상대방 돌
 		score[a][b] += my_score + 200;
 }
+
+
+void opScoreChange2(int a, int b, int my_score, int su){
+	// 돌 5개의 경우
+
+	if (su == 0 && isRev == 0) { // 첫번째 수, 내돌
+		score[a][b] += my_score + 500;
+	}
+	else if (su == 0 && isRev == 1) // 첫번 째 수, 상대방 돌
+		score[a][b] += my_score + 200;
+	else if (su == 1 && isRev == 0) //두번째 수, 내돌
+		score[a][b] += my_score + 500;
+	else if (su == 1 && isRev == 1) //두번째 수, 상대방 돌
+		score[a][b] += my_score + 200;
+}
+
+
+
 
 bool compareCoord(const Coord &a, const Coord &b) {
 	return a.score > b.score;
@@ -764,8 +784,8 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
-		boardSum += 10000;
 		if (isRev) boardSum -= 10000;
+		else boardSum += 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -1307,8 +1327,8 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
-		boardSum += 10000;
 		if (isRev) boardSum -= 10000;
+		else boardSum += 10000;
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -1849,8 +1869,9 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
-		boardSum += 10000;
 		if (isRev) boardSum -= 10000;
+		else boardSum += 10000;
+
 		break;
 	case (64) :
 		score[a][b] += 0;
@@ -2391,8 +2412,8 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
-		boardSum += 10000;
 		if (isRev) boardSum -= 10000;
+		else boardSum += 10000;
 		break;
 	default:
 		break;
@@ -2571,79 +2592,138 @@ void deleteTempMove(int x, int y)
 {
 	tempBoard[x][y] = 0;
 }
-
 void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
 	//블럭이 없는 첫수이면 중앙에 두기
 	if (blockCount == 0 && cnt == 1)
 	{
-		@@ - 2607, 14 + 2606, 11 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2,
-			tempY[1] = pos_y2;
+		tempX[0] = 9;
+		tempY[0] = 9;
+		tempX[1] = 0;
+		tempY[1] = 0;
+		return;
 	}
-}
-return;
+
+	//초기화 - 두는 위치 임시 저장할 변수
+	int tempPos_x1 = 0;
+	int tempPos_y1 = 0;
+	int tempPos_x2 = 0;
+	int tempPos_y2 = 0;
+
+	if (current_depth == depth)		//depth까지 내려갔으면 종료
+	{
+		int totalScore = getScore2();				//renewScore에서 totalScore변경하게 확인.
+
+		if (max_score < totalScore)				//더 점수가 높으면
+		{
+			max_score = totalScore;
+			tempX[0] = pos_x1;
+			tempY[0] = pos_y1;
+
+			if (cnt > 1)
+			{
+				tempX[1] = pos_x2;
+				tempY[1] = pos_y2;
+			}
+		}
+		return;
 	}
+
 	else
 	{
-		//6목을 내가 만들었으면 더 탐색하지 않고 종료
-		if (max_score == 100000)
-			return;
 		//현재 돌을 놓고 Minimax로 들어온 상태		
 		if (getScore2() > 5000)		//내 돌이 6개가 있으면
 		{							//처음 둔 돌 저장 , Minimax 완전히 종료
-			@@ - 2626, 23 + 2622, 46 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2,
-				return;
+			tempX[0] = pos_x1;
+			tempY[0] = pos_y1;
+			tempX[1] = pos_x2;
+			tempY[1] = pos_y2;
+			max_score = 100000;
+			return;
 		}
+
 		//6목을 내가 만들었으면 더 탐색하지 않고 종료
 		if (max_score == 100000)
 			return;
+
 		if (getScore2() < -5000)		//상대 돌이 6개가 있으면
 		{
 			return;						//이번 Minimax만 종료
 		}
+
 		int turn = (current_depth + 1) % 2;		//depth에 따라 turn이 달라짐.
+
 		if (turn == 0)
 			turn = 2;
+
 		if (turn == 2)			//상대 턴이면 반전시켜서 전장탐색 실행
 			reverse();			//반전
+
 		warSearch(turn);		//전장탐색
+
 		if (turn == 2)
 			reverse();			//반전 돌려놓기
+
 		//돌두고 Minimax 그리고 돌 지우기
 		for (int i = 0; i < childNum; i++)		//돌을 두어 childnum만큼 tree의 노드를 생성합니다.
 		{
 			if (turn == 2)			//상대 턴이면 반전시켜서 전장탐색 실행
 				reverse();			//반전
+
 			warSearch(turn);		//전장탐색
+
 			if (turn == 2)
 				reverse();			//반전 돌려놓기
+
 			//6목을 내가 만들었으면 더 탐색하지 않고 종료
 			if (max_score == 100000)
 				return;
+
 			// 처음 두는 돌의 위치를 저장.
 			if (current_depth == 0)
 			{
-				warSearch(turn);
 				pos_x1 = battleTop[i].x / 100;
 				pos_y1 = battleTop[i].y / 100;
-				@@ - 2670, 20 + 2689, 8 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2,
-					//	print_bas();
-					if (turn == 1)			//내 턴이면 반전시켜서 전장탐색 실행
-						reverse();			//반전
-				warSearch(turn);
-				if (turn == 1)
-					reverse();			//반전 돌려놓기
-				Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
-				for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+
+				if (cnt > 1)
 				{
-					if (C == 1)
-						@@ - 2693, 9 + 2700, 6 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2,
-						deleteTempMove(tempPos_x2, tempPos_y2);		//두 번째 돌 지우기
+					pos_x2 = battleTop[i].x % 100;
+					pos_y2 = battleTop[i].y % 100;
 				}
-				warSearch(turn);
-				//	print_bas();
 			}
+
+			tempPos_x1 = battleTop[i].x / 100;
+			tempPos_y1 = battleTop[i].y / 100;
+			tempPos_x2 = battleTop[i].x % 100;
+			tempPos_y2 = battleTop[i].y % 100;
+
+
+			for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+			{
+				if (C == 1)
+					tempMyMove(tempPos_x1, tempPos_y1, turn);		//첫 번째 돌 두기
+
+				if (C == 2)
+					tempMyMove(tempPos_x2, tempPos_y2, turn);		//두 번째 돌 두기
+			}
+
+			//	print_bas();
+
+			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
+
+			for (int C = 1; C <= cnt; C++)		//cnt가 1이면 한번 두고, 2면 두 번 둡니다.
+			{
+				if (C == 1)
+					deleteTempMove(tempPos_x1, tempPos_y1);		//첫 번째 돌 지우기
+
+				if (C == 2)
+					deleteTempMove(tempPos_x2, tempPos_y2);		//두 번째 돌 지우기
+			}
+
+			//	print_bas();
 		}
+	}
+}
 
 //모양에 따른 모양을 가져옵니다.
 void value_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l)
@@ -3326,9 +3406,7 @@ int getScore2(){
 
 	for (int i = 0; i < width; i++){ // 보드판의 모든 스코어를 총합
 		for (int j = 0; j < height; j++){
-			if (tempBoard[i][j] != 0){
-				boardSum += score[i][j];
-			}
+			boardSum += score[i][j];
 		}
 	}
 	reverse();
