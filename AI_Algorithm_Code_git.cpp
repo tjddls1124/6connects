@@ -1,36 +1,36 @@
 // Samsung Go Tournament Form C (g++-4.8.3)
 
 /*
-[AI ÄÚµå ÀÛ¼º ¹æ¹ı]
+[AI ì½”ë“œ ì‘ì„± ë°©ë²•]
 
-1. char info[]ÀÇ ¹è¿­ ¾È¿¡					"TeamName:ÀÚ½ÅÀÇ ÆÀ¸í,Department:ÀÚ½ÅÀÇ ¼Ò¼Ó"					¼ø¼­·Î ÀÛ¼ºÇÕ´Ï´Ù.
-( ÁÖÀÇ ) Teamname:°ú Department:´Â ²À µé¾î°¡¾ß ÇÕ´Ï´Ù.
-"ÀÚ½ÅÀÇ ÆÀ¸í", "ÀÚ½ÅÀÇ ¼Ò¼Ó"À» ¼öÁ¤ÇØ¾ß ÇÕ´Ï´Ù.
+1. char info[]ì˜ ë°°ì—´ ì•ˆì—					"TeamName:ìì‹ ì˜ íŒ€ëª…,Department:ìì‹ ì˜ ì†Œì†"					ìˆœì„œë¡œ ì‘ì„±í•©ë‹ˆë‹¤.
+( ì£¼ì˜ ) Teamname:ê³¼ Department:ëŠ” ê¼­ ë“¤ì–´ê°€ì•¼ í•©ë‹ˆë‹¤.
+"ìì‹ ì˜ íŒ€ëª…", "ìì‹ ì˜ ì†Œì†"ì„ ìˆ˜ì •í•´ì•¼ í•©ë‹ˆë‹¤.
 
-2. ¾Æ·¡ÀÇ myturn() ÇÔ¼ö ¾È¿¡ ÀÚ½Å¸¸ÀÇ AI ÄÚµå¸¦ ÀÛ¼ºÇÕ´Ï´Ù.
+2. ì•„ë˜ì˜ myturn() í•¨ìˆ˜ ì•ˆì— ìì‹ ë§Œì˜ AI ì½”ë“œë¥¼ ì‘ì„±í•©ë‹ˆë‹¤.
 
-3. AI ÆÄÀÏÀ» Å×½ºÆ® ÇÏ½Ç ¶§´Â "À°¸ñ ¾Ë°í¸®Áò´ëÈ¸ Åø"À» »ç¿ëÇÕ´Ï´Ù.
+3. AI íŒŒì¼ì„ í…ŒìŠ¤íŠ¸ í•˜ì‹¤ ë•ŒëŠ” "ìœ¡ëª© ì•Œê³ ë¦¬ì¦˜ëŒ€íšŒ íˆ´"ì„ ì‚¬ìš©í•©ë‹ˆë‹¤.
 
-4. À°¸ñ ¾Ë°í¸®Áò ´ëÈ¸ ÅøÀÇ ¿¬½ÀÇÏ±â¿¡¼­ ¹ÙµÏµ¹À» ´©¸¥ ÈÄ, ÀÚ½ÅÀÇ "ÆÀ¸í" ÀÌ µé¾î°£ ¾Ë°í¸®ÁòÀ» Ãß°¡ÇÏ¿© Å×½ºÆ® ÇÕ´Ï´Ù.
-
-
-
-[º¯¼ö ¹× ÇÔ¼ö]
-myturn(int cnt) : ÀÚ½ÅÀÇ AI ÄÚµå¸¦ ÀÛ¼ºÇÏ´Â ¸ŞÀÎ ÇÔ¼ö ÀÔ´Ï´Ù.
-int cnt (myturn()ÇÔ¼öÀÇ ÆÄ¶ó¹ÌÅÍ) : µ¹À» ¸î ¼ö µÖ¾ßÇÏ´ÂÁö Á¤ÇÏ´Â º¯¼ö, cnt°¡ 1ÀÌ¸é À°¸ñ ½ÃÀÛ ½Ã  ÇÑ ¹ø¸¸  µÎ´Â »óÈ²(ÇÑ ¹ø), cnt°¡ 2ÀÌ¸é ±× ÀÌÈÄ µ¹À» µÎ´Â »óÈ²(µÎ ¹ø)
-int  x[0], y[0] : ÀÚ½ÅÀÌ µÑ Ã¹ ¹ø Â° µ¹ÀÇ xÁÂÇ¥ , yÁÂÇ¥°¡ ÀúÀåµÇ¾î¾ß ÇÕ´Ï´Ù.
-int  x[1], y[1] : ÀÚ½ÅÀÌ µÑ µÎ ¹ø Â° µ¹ÀÇ xÁÂÇ¥ , yÁÂÇ¥°¡ ÀúÀåµÇ¾î¾ß ÇÕ´Ï´Ù.
-void domymove(int x[], int y[], cnt) : µÑ µ¹µéÀÇ ÁÂÇ¥¸¦ ÀúÀåÇØ¼­ Ãâ·Â
+4. ìœ¡ëª© ì•Œê³ ë¦¬ì¦˜ ëŒ€íšŒ íˆ´ì˜ ì—°ìŠµí•˜ê¸°ì—ì„œ ë°”ë‘‘ëŒì„ ëˆ„ë¥¸ í›„, ìì‹ ì˜ "íŒ€ëª…" ì´ ë“¤ì–´ê°„ ì•Œê³ ë¦¬ì¦˜ì„ ì¶”ê°€í•˜ì—¬ í…ŒìŠ¤íŠ¸ í•©ë‹ˆë‹¤.
 
 
-//int board[BOARD_SIZE][BOARD_SIZE]; ¹ÙµÏÆÇ ÇöÀç»óÈ² ´ã°í ÀÖ¾î ¹Ù·Î»ç¿ë °¡´ÉÇÔ. ´Ü, ¿øº»µ¥ÀÌÅÍ·Î ¼öÁ¤ Àı´ë±İÁö
-// ³õÀ»¼ö ¾ø´Â À§Ä¡¿¡ ¹ÙµÏµ¹À» ³õÀ¸¸é ½Ç°İÆĞ Ã³¸®.
 
-boolean ifFree(int x, int y) : ÇöÀç [x,y]ÁÂÇ¥¿¡ ¹ÙµÏµ¹ÀÌ ÀÖ´ÂÁö È®ÀÎÇÏ´Â ÇÔ¼ö (¾øÀ¸¸é true, ÀÖÀ¸¸é false)
-int showBoard(int x, int y) : [x, y] ÁÂÇ¥¿¡ ¹«½¼ µ¹ÀÌ Á¸ÀçÇÏ´ÂÁö º¸¿©ÁÖ´Â ÇÔ¼ö (1 = ÀÚ½ÅÀÇ µ¹, 2 = »ó´ëÀÇ µ¹, 3 = ºí·°Å·)
+[ë³€ìˆ˜ ë° í•¨ìˆ˜]
+myturn(int cnt) : ìì‹ ì˜ AI ì½”ë“œë¥¼ ì‘ì„±í•˜ëŠ” ë©”ì¸ í•¨ìˆ˜ ì…ë‹ˆë‹¤.
+int cnt (myturn()í•¨ìˆ˜ì˜ íŒŒë¼ë¯¸í„°) : ëŒì„ ëª‡ ìˆ˜ ë‘¬ì•¼í•˜ëŠ”ì§€ ì •í•˜ëŠ” ë³€ìˆ˜, cntê°€ 1ì´ë©´ ìœ¡ëª© ì‹œì‘ ì‹œ  í•œ ë²ˆë§Œ  ë‘ëŠ” ìƒí™©(í•œ ë²ˆ), cntê°€ 2ì´ë©´ ê·¸ ì´í›„ ëŒì„ ë‘ëŠ” ìƒí™©(ë‘ ë²ˆ)
+int  x[0], y[0] : ìì‹ ì´ ë‘˜ ì²« ë²ˆ ì§¸ ëŒì˜ xì¢Œí‘œ , yì¢Œí‘œê°€ ì €ì¥ë˜ì–´ì•¼ í•©ë‹ˆë‹¤.
+int  x[1], y[1] : ìì‹ ì´ ë‘˜ ë‘ ë²ˆ ì§¸ ëŒì˜ xì¢Œí‘œ , yì¢Œí‘œê°€ ì €ì¥ë˜ì–´ì•¼ í•©ë‹ˆë‹¤.
+void domymove(int x[], int y[], cnt) : ë‘˜ ëŒë“¤ì˜ ì¢Œí‘œë¥¼ ì €ì¥í•´ì„œ ì¶œë ¥
 
 
-<-------AI¸¦ ÀÛ¼ºÇÏ½Ç ¶§, °°Àº ÀÌ¸§ÀÇ ÇÔ¼ö ¹× º¯¼ö »ç¿ëÀ» ±ÇÀåÇÏÁö ¾Ê½À´Ï´Ù----->
+//int board[BOARD_SIZE][BOARD_SIZE]; ë°”ë‘‘íŒ í˜„ì¬ìƒí™© ë‹´ê³  ìˆì–´ ë°”ë¡œì‚¬ìš© ê°€ëŠ¥í•¨. ë‹¨, ì›ë³¸ë°ì´í„°ë¡œ ìˆ˜ì • ì ˆëŒ€ê¸ˆì§€
+// ë†“ì„ìˆ˜ ì—†ëŠ” ìœ„ì¹˜ì— ë°”ë‘‘ëŒì„ ë†“ìœ¼ë©´ ì‹¤ê²©íŒ¨ ì²˜ë¦¬.
+
+boolean ifFree(int x, int y) : í˜„ì¬ [x,y]ì¢Œí‘œì— ë°”ë‘‘ëŒì´ ìˆëŠ”ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜ (ì—†ìœ¼ë©´ true, ìˆìœ¼ë©´ false)
+int showBoard(int x, int y) : [x, y] ì¢Œí‘œì— ë¬´ìŠ¨ ëŒì´ ì¡´ì¬í•˜ëŠ”ì§€ ë³´ì—¬ì£¼ëŠ” í•¨ìˆ˜ (1 = ìì‹ ì˜ ëŒ, 2 = ìƒëŒ€ì˜ ëŒ, 3 = ë¸”ëŸ­í‚¹)
+
+
+<-------AIë¥¼ ì‘ì„±í•˜ì‹¤ ë•Œ, ê°™ì€ ì´ë¦„ì˜ í•¨ìˆ˜ ë° ë³€ìˆ˜ ì‚¬ìš©ì„ ê¶Œì¥í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤----->
 */
 
 #include <Windows.h>
@@ -41,7 +41,7 @@ int showBoard(int x, int y) : [x, y] ÁÂÇ¥¿¡ ¹«½¼ µ¹ÀÌ Á¸ÀçÇÏ´ÂÁö º¸¿©ÁÖ´Â ÇÔ¼ö (
 #include "Connect6Algo.h"
 #include <algorithm>
 
-//±¸Á¶Ã¼ ¼±¾ğ
+//êµ¬ì¡°ì²´ ì„ ì–¸
 typedef struct {
 	int x;
 	int y;
@@ -49,38 +49,38 @@ typedef struct {
 }Coord;
 
 
-//minimax °ü·Ã»ó¼ö
+//minimax ê´€ë ¨ìƒìˆ˜
 #define firstSearchNum 7
 #define childNum 4
 #define depth 3
 
 
-//Board °ü·Ã»ó¼ö
+//Board ê´€ë ¨ìƒìˆ˜
 #define width 19
 #define height 19
 #define BOARD_SIZE 19
 
-//Minimax °ü·Ã º¯¼ö
+//Minimax ê´€ë ¨ ë³€ìˆ˜
 int tempX[2];
 int tempY[2];
 int tempBoard[width][height];
 int max_score = -10000;
 
 
-//SCore °ü·Ãº¯¼ö
+//SCore ê´€ë ¨ë³€ìˆ˜
 int score[BOARD_SIZE][BOARD_SIZE];
 int temp_score[BOARD_SIZE][BOARD_SIZE];
 void renewScore(int su);
 int isRev = 0;
 
 
-//Block °ü·Ã
+//Block ê´€ë ¨
 int blockCount = 0;
 void changeBlock();
 Coord blocks[10] = {};
 
 
-//getScore °ü·ÃÇÔ¼ö
+//getScore ê´€ë ¨í•¨ìˆ˜
 int getScore();
 void valueHorizon();
 void valueVerticle();
@@ -90,25 +90,25 @@ void reverse();
 
 
 
-//getScore2 °ü·Ã
+//getScore2 ê´€ë ¨
 int getScore2();
 bool isEndPosition = false;
 int boardSum = 0;
 
 
 
-//Æò°¡Á¡¼ö °ü·Ã º¯¼ö
-int my_con[8] = { 0, 0, 2, 4, 10, 10, 1000, -1000 };      //¿¬¼ÓµÈ µ¹
-int my_slp[7] = { 0, 0, 0, 4, 6, 7, 0 };   //ÇÑÂÊÀÌ ¸·Èù µ¹
-int my_ind[7] = { 0, 0, 0, 4, 6, 7, 0 };   //¾Ö¸ÅÇÑ µ¹(ÇÑÂÊÀÌ ¸·È÷°í ¶ç¾îÁø µ¹)
-int my_jump[7] = { 0, 0, 0, 5, 7, 8, 0 };   //¶è µ¹
+//í‰ê°€ì ìˆ˜ ê´€ë ¨ ë³€ìˆ˜
+int my_con[8] = { 0, 0, 2, 4, 10, 10, 1000, -1000 };      //ì—°ì†ëœ ëŒ
+int my_slp[7] = { 0, 0, 0, 4, 6, 7, 0 };   //í•œìª½ì´ ë§‰íŒ ëŒ
+int my_ind[7] = { 0, 0, 0, 4, 6, 7, 0 };   //ì• ë§¤í•œ ëŒ(í•œìª½ì´ ë§‰íˆê³  ë„ì–´ì§„ ëŒ)
+int my_jump[7] = { 0, 0, 0, 5, 7, 8, 0 };   //ëˆ ëŒ
 
-int op_con[8] = { 0, 0, 0, -9, -900, -900, -1000, 1000 };      //¿¬¼ÓµÈ µ¹
-int op_slp[7] = { 0, 0, 0, 0, -900, -900, 0 };   //ÇÑÂÊÀÌ ¸·Èù µ¹
-int op_ind[7] = { 0, 0, 0 - 6, -900, -900, 0 };   //¾Ö¸ÅÇÑ µ¹(ÇÑÂÊÀÌ ¸·È÷°í ¶ç¾îÁø µ¹)
-int op_jump[7] = { 0, 0, 0, -8, -900, -900, 0 };   //¶è µ¹
+int op_con[8] = { 0, 0, 0, -9, -900, -900, -1000, 1000 };      //ì—°ì†ëœ ëŒ
+int op_slp[7] = { 0, 0, 0, 0, -900, -900, 0 };   //í•œìª½ì´ ë§‰íŒ ëŒ
+int op_ind[7] = { 0, 0, 0 - 6, -900, -900, 0 };   //ì• ë§¤í•œ ëŒ(í•œìª½ì´ ë§‰íˆê³  ë„ì–´ì§„ ëŒ)
+int op_jump[7] = { 0, 0, 0, -8, -900, -900, 0 };   //ëˆ ëŒ
 
-//°¢ Á¡¼öµéÀÇ °³¼ö¸¦ ÀúÀåÇÏ´Â º¯¼ö ¹è¿­ »ı¼º
+//ê° ì ìˆ˜ë“¤ì˜ ê°œìˆ˜ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ ë°°ì—´ ìƒì„±
 int conNum[3][8] = { 0 };
 int indNum[3][7] = { 0 };
 int jumNum[3][7] = { 0 };
@@ -125,31 +125,31 @@ using namespace std;
 
 
 void opScoreChange(int a, int b, int my_score, int su){
-	// µ¹ 4°³ÀÇ °æ¿ì
+	// ëŒ 4ê°œì˜ ê²½ìš°
 
-	if (su == 0 && isRev == 0) { // Ã¹¹øÂ° ¼ö, ³»µ¹
+	if (su == 0 && isRev == 0) { // ì²«ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
 		score[a][b] += my_score + 500;
 	}
-	else if (su == 0 && isRev == 1) // Ã¹¹ø Â° ¼ö, »ó´ë¹æ µ¹
+	else if (su == 0 && isRev == 1) // ì²«ë²ˆ ì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
 		score[a][b] += my_score + 200;
-	else if (su == 1 && isRev == 0) //µÎ¹øÂ° ¼ö, ³»µ¹
+	else if (su == 1 && isRev == 0) //ë‘ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
 		score[a][b] += my_score;
-	else if (su == 1 && isRev == 1) //µÎ¹øÂ° ¼ö, »ó´ë¹æ µ¹
+	else if (su == 1 && isRev == 1) //ë‘ë²ˆì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
 		score[a][b] += my_score + 200;
 }
 
 
 void opScoreChange2(int a, int b, int my_score, int su){
-	// µ¹ 5°³ÀÇ °æ¿ì
+	// ëŒ 5ê°œì˜ ê²½ìš°
 
-	if (su == 0 && isRev == 0) { // Ã¹¹øÂ° ¼ö, ³»µ¹
+	if (su == 0 && isRev == 0) { // ì²«ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
 		score[a][b] += my_score + 500;
 	}
-	else if (su == 0 && isRev == 1) // Ã¹¹ø Â° ¼ö, »ó´ë¹æ µ¹
+	else if (su == 0 && isRev == 1) // ì²«ë²ˆ ì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
 		score[a][b] += my_score + 200;
-	else if (su == 1 && isRev == 0) //µÎ¹øÂ° ¼ö, ³»µ¹
+	else if (su == 1 && isRev == 0) //ë‘ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
 		score[a][b] += my_score + 500;
-	else if (su == 1 && isRev == 1) //µÎ¹øÂ° ¼ö, »ó´ë¹æ µ¹
+	else if (su == 1 && isRev == 1) //ë‘ë²ˆì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
 		score[a][b] += my_score + 200;
 }
 
@@ -162,7 +162,7 @@ bool compareCoord(const Coord &a, const Coord &b) {
 
 void sortScore(){
 	int count = 0;
-	for (int i = 0; i < width; i++){ //score°ª°ú ÁÂÇ¥Ãß°¡
+	for (int i = 0; i < width; i++){ //scoreê°’ê³¼ ì¢Œí‘œì¶”ê°€
 		for (int j = 0; j < height; j++){
 			if (score[i][j] != -1){
 				scoreList[count].x = i;
@@ -176,8 +176,8 @@ void sortScore(){
 }
 
 /**
-»óÀ§ Á¡¼ö¸¦ °¡Áø ÀüÀåÀ» Å½»öÇÕ´Ï´Ù.
-totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 À» ³Ö¾îÁİ´Ï´Ù.
+ìƒìœ„ ì ìˆ˜ë¥¼ ê°€ì§„ ì „ì¥ì„ íƒìƒ‰í•©ë‹ˆë‹¤.
+totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 ì„ ë„£ì–´ì¤ë‹ˆë‹¤.
 */
 void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int d, int turn)
 {
@@ -192,16 +192,16 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 			x = scoreList[i].x;
 			y = scoreList[i].y;
 			totalScore = scoreList[i].score;
-			tempBoard[x][y] = turn; //µ¹À» ³öº¸°í °»½Å
+			tempBoard[x][y] = turn; //ëŒì„ ë†”ë³´ê³  ê°±ì‹ 
 			renewScore(d + 1);
 			sortScore();
-			battleSearch(scoreList, totalScore, i * firstSearchNum, x, y, 1, turn); //Ã¹ ¹øÂ° µ¹ÀÎ°æ¿ì Àç±ÍÈ£Ãâ
+			battleSearch(scoreList, totalScore, i * firstSearchNum, x, y, 1, turn); //ì²« ë²ˆì§¸ ëŒì¸ê²½ìš° ì¬ê·€í˜¸ì¶œ
 			tempBoard[x][y] = 0;
 			renewScore(d);
 			sortScore();
 		}
 
-		if (d == 1){ //2¹øÂ° µ¹ÀÎ°æ¿ì
+		if (d == 1){ //2ë²ˆì§¸ ëŒì¸ê²½ìš°
 			battleTop[count + i].x += scoreList[i].x;
 			battleTop[count + i].y += scoreList[i].y;
 			battleTop[count + i].score = scoreList[i].score + totalScore;
@@ -210,7 +210,7 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 	return;
 }
 
-//»óÀ§ Á¡¼ö¸¦ °¡Áø ÀüÀåÀ» Ã£¾Æ³»¾î ¹è¿­ battleTop¿¡ SortÇÏ¿© ÀúÀåÇÕ´Ï´Ù.
+//ìƒìœ„ ì ìˆ˜ë¥¼ ê°€ì§„ ì „ì¥ì„ ì°¾ì•„ë‚´ì–´ ë°°ì—´ battleTopì— Sortí•˜ì—¬ ì €ì¥í•©ë‹ˆë‹¤.
 void warSearch(int turn){
 
 	for (int i = 0; i < firstSearchNum * firstSearchNum; i++){
@@ -225,20 +225,19 @@ void warSearch(int turn){
 	sort(battleTop, battleTop + firstSearchNum * firstSearchNum, compareCoord);
 }
 
-
-void changeBlock(){// ºí·ÏÀ» ¹«Á¶°Ç 1¹øÀ¸·Î Ã³¸®
+void changeBlock(){// ë¸”ë¡ì„ ë¬´ì¡°ê±´ 1ë²ˆìœ¼ë¡œ ì²˜ë¦¬
 	for (int i = 0; i < blockCount; i++){
 		tempBoard[blocks[i].x][blocks[i].y] = 1;
 
 	}
 }
 
-void saveBoard(){ // ÇöÀç board¸¦ tempBoard¿¡ ÀúÀå
+void saveBoard(){ // í˜„ì¬ boardë¥¼ tempBoardì— ì €ì¥
 	blockCount = 0;
 	for (int i = 0; i < 19; i++){
 		for (int j = 0; j < 19; j++){
 			if (showBoard(i, j) == 3) {
-				//ºí·Ï¸®½ºÆ®¿¡ ÀúÀå
+				//ë¸”ë¡ë¦¬ìŠ¤íŠ¸ì— ì €ì¥
 				blocks[blockCount].x = i;
 				blocks[blockCount].y = j;
 				blockCount++;
@@ -246,7 +245,7 @@ void saveBoard(){ // ÇöÀç board¸¦ tempBoard¿¡ ÀúÀå
 			tempBoard[i][j] = showBoard(i, j);
 		}
 	}
-	//ºí·ÏÀ» 1·Î º¯È¯
+	//ë¸”ë¡ì„ 1ë¡œ ë³€í™˜
 	changeBlock();
 }
 
@@ -522,7 +521,7 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		opScoreChange(k, l, 30, su);
 		break;
 	case (31) :
-		opScoreChange(a, b, 500, su);
+		opScoreChange2(a, b, 500, su);
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
@@ -651,7 +650,7 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		break;
 	case (47) :
 		score[a][b] += 0;
-		opScoreChange(c, d, 500, su);
+		opScoreChange2(c, d, 500, su);
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
@@ -716,7 +715,7 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case (55) :
 		score[a][b] += 0;
 		score[c][d] += 0;
-		opScoreChange(e, f, 500, su);
+		opScoreChange2(e, f, 500, su);
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
@@ -747,9 +746,9 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		break;
 	case (59) :
 		score[a][b] += 0;
-		score[c][d] += 0; opScoreChange(k, l, 500, su);
+		score[c][d] += 0;
 		score[e][f] += 0;
-		opScoreChange(g, h, 500, su);
+		opScoreChange2(g, h, 500, su);
 		score[i][j] += 0;
 		score[k][l] += 0;
 		break;
@@ -766,7 +765,7 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
-		opScoreChange(i, j, 500, su);
+		opScoreChange2(i, j, 500, su);
 		score[k][l] += 0;
 		break;
 	case (62) :
@@ -775,7 +774,7 @@ void score_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
-		opScoreChange(k, l, 500, su);
+		opScoreChange2(k, l, 500, su);
 		break;
 	case (63) :
 		score[a][b] += 0;
@@ -1064,7 +1063,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		opScoreChange(k, l, 30, su);
 		break;
 	case (31) :
-		opScoreChange(a, b, 500, su);
+		opScoreChange2(a, b, 500, su);
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
@@ -1194,7 +1193,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		break;
 	case (47) :
 		score[a][b] += 0;
-		opScoreChange(c, d, 500, su);
+		opScoreChange2(c, d, 500, su);
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
@@ -1259,7 +1258,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case (55) :
 		score[a][b] += 0;
 		score[c][d] += 0;
-		opScoreChange(e, f, 500, su);
+		opScoreChange2(e, f, 500, su);
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
@@ -1292,7 +1291,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[a][b] += 0;
 		score[c][d] += 0;
 		score[e][f] += 0;
-		opScoreChange(g, h, 500, su);
+		opScoreChange2(g, h, 500, su);
 		score[i][j] += 0;
 		score[k][l] += 0;
 		break;
@@ -1309,7 +1308,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
-		opScoreChange(i, j, 500, su);
+		opScoreChange2(i, j, 500, su);
 		score[k][l] += 0;
 		break;
 	case (62) :
@@ -1318,7 +1317,7 @@ void score_left(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
-		opScoreChange(k, l, 500, su);
+		opScoreChange2(k, l, 500, su);
 		break;
 	case (63) :
 		score[a][b] += 0;
@@ -1607,7 +1606,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		opScoreChange(k, l, 30, su);
 		break;
 	case (31) :
-		opScoreChange(a, b, 500, su);
+		opScoreChange2(a, b, 500, su);
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
@@ -1736,7 +1735,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		break;
 	case (47) :
 		score[a][b] += 0;
-		opScoreChange(c, d, 500, su);
+		opScoreChange2(c, d, 500, su);
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
@@ -1801,7 +1800,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 	case (55) :
 		score[a][b] += 0;
 		score[c][d] += 0;
-		opScoreChange(e, f, 500, su);
+		opScoreChange2(e, f, 500, su);
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
@@ -1834,7 +1833,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[a][b] += 0;
 		score[c][d] += 0;
 		score[e][f] += 0;
-		opScoreChange(g, h, 500, su);
+		opScoreChange2(g, h, 500, su);
 		score[i][j] += 0;
 		score[k][l] += 0;
 		break;
@@ -1851,7 +1850,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
-		opScoreChange(i, j, 500, su);
+		opScoreChange2(i, j, 500, su);
 		score[k][l] += 0;
 		break;
 	case (62) :
@@ -1860,7 +1859,7 @@ void score_right(int a, int b, int c, int d, int e, int f, int g, int h, int i, 
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
-		opScoreChange(k, l, 500, su);
+		opScoreChange2(k, l, 500, su);
 		break;
 	case (63) :
 		score[a][b] += 0;
@@ -2150,7 +2149,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		opScoreChange(k, l, 30, su);
 		break;
 	case (31) :
-		opScoreChange(a, b, 500, su);
+		opScoreChange2(a, b, 500, su);
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
@@ -2279,7 +2278,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		break;
 	case (47) :
 		score[a][b] += 0;
-		opScoreChange(c, d, 500, su);
+		opScoreChange2(c, d, 500, su);
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
@@ -2344,7 +2343,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	case (55) :
 		score[a][b] += 0;
 		score[c][d] += 0;
-		opScoreChange(e, f, 500, su);
+		opScoreChange2(e, f, 500, su);
 		score[g][h] += 0;
 		score[i][j] += 0;
 		score[k][l] += 0;
@@ -2377,7 +2376,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[a][b] += 0;
 		score[c][d] += 0;
 		score[e][f] += 0;
-		opScoreChange(g, h, 500, su);
+		opScoreChange2(g, h, 500, su);
 		score[i][j] += 0;
 		score[k][l] += 0;
 		break;
@@ -2394,7 +2393,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[c][d] += 0;
 		score[e][f] += 0;
 		score[g][h] += 0;
-		opScoreChange(i, j, 500, su);
+		opScoreChange2(i, j, 500, su);
 		score[k][l] += 0;
 		break;
 	case (62) :
@@ -2403,7 +2402,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 		score[e][f] += 0;
 		score[g][h] += 0;
 		score[i][j] += 0;
-		opScoreChange(k, l, 500, su);
+		opScoreChange2(k, l, 500, su);
 		break;
 	case (63) :
 		score[a][b] += 0;
@@ -2418,7 +2417,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	default:
 		break;
 	}
-} // ¼öÁ¤¿Ï·á // ¼öÁ¤¿Ï·á
+} // ìˆ˜ì •ì™„ë£Œ // ìˆ˜ì •ì™„ë£Œ
 
 void horizon(int su)
 {
@@ -2488,7 +2487,7 @@ void verticle(int su)
 	}
 }
 
-void diagonal1(int su)  // ¢Ù
+void diagonal1(int su)  // â†˜
 {
 	for (int n = 0; n < height - 5; ++n)
 	{
@@ -2525,7 +2524,7 @@ void diagonal1(int su)  // ¢Ù
 	}
 }
 
-void diagonal2(int su) // ¢Ö
+void diagonal2(int su) // â†—
 {
 	for (int n = 5; n < height; ++n)
 	{
@@ -2579,7 +2578,7 @@ int tempIsFree(int x, int y) {
 }
 
 /**
-*ÀÓ½Ãº¸µå¿¡ µ¹À» ³öº¸±â
+*ì„ì‹œë³´ë“œì— ëŒì„ ë†”ë³´ê¸°
 turn 1 : my turn
 turn 2 : op turn
 */
@@ -2592,9 +2591,10 @@ void deleteTempMove(int x, int y)
 {
 	tempBoard[x][y] = 0;
 }
+
 void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
-	//ºí·°ÀÌ ¾ø´Â Ã¹¼öÀÌ¸é Áß¾Ó¿¡ µÎ±â
+	//ë¸”ëŸ­ì´ ì—†ëŠ” ì²«ìˆ˜ì´ë©´ ì¤‘ì•™ì— ë‘ê¸°
 	if (blockCount == 0 && cnt == 1)
 	{
 		tempX[0] = 9;
@@ -2604,17 +2604,17 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 		return;
 	}
 
-	//ÃÊ±âÈ­ - µÎ´Â À§Ä¡ ÀÓ½Ã ÀúÀåÇÒ º¯¼ö
+	//ì´ˆê¸°í™” - ë‘ëŠ” ìœ„ì¹˜ ì„ì‹œ ì €ì¥í•  ë³€ìˆ˜
 	int tempPos_x1 = 0;
 	int tempPos_y1 = 0;
 	int tempPos_x2 = 0;
 	int tempPos_y2 = 0;
 
-	if (current_depth == depth)		//depth±îÁö ³»·Á°¬À¸¸é Á¾·á
+	if (current_depth == depth)		//depthê¹Œì§€ ë‚´ë ¤ê°”ìœ¼ë©´ ì¢…ë£Œ
 	{
-		int totalScore = getScore2();				//renewScore¿¡¼­ totalScoreº¯°æÇÏ°Ô È®ÀÎ.
+		int totalScore = getScore2();				//renewScoreì—ì„œ totalScoreë³€ê²½í•˜ê²Œ í™•ì¸.
 
-		if (max_score < totalScore)				//´õ Á¡¼ö°¡ ³ôÀ¸¸é
+		if (max_score < totalScore)				//ë” ì ìˆ˜ê°€ ë†’ìœ¼ë©´
 		{
 			max_score = totalScore;
 			tempX[0] = pos_x1;
@@ -2631,9 +2631,9 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 
 	else
 	{
-		//ÇöÀç µ¹À» ³õ°í Minimax·Î µé¾î¿Â »óÅÂ		
-		if (getScore2() > 5000)		//³» µ¹ÀÌ 6°³°¡ ÀÖÀ¸¸é
-		{							//Ã³À½ µĞ µ¹ ÀúÀå , Minimax ¿ÏÀüÈ÷ Á¾·á
+		//í˜„ì¬ ëŒì„ ë†“ê³  Minimaxë¡œ ë“¤ì–´ì˜¨ ìƒíƒœ		
+		if (getScore2() > 5000)		//ë‚´ ëŒì´ 6ê°œê°€ ìˆìœ¼ë©´
+		{							//ì²˜ìŒ ë‘” ëŒ ì €ì¥ , Minimax ì™„ì „íˆ ì¢…ë£Œ
 			tempX[0] = pos_x1;
 			tempY[0] = pos_y1;
 			tempX[1] = pos_x2;
@@ -2642,44 +2642,44 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			return;
 		}
 
-		//6¸ñÀ» ³»°¡ ¸¸µé¾úÀ¸¸é ´õ Å½»öÇÏÁö ¾Ê°í Á¾·á
+		//6ëª©ì„ ë‚´ê°€ ë§Œë“¤ì—ˆìœ¼ë©´ ë” íƒìƒ‰í•˜ì§€ ì•Šê³  ì¢…ë£Œ
 		if (max_score == 100000)
 			return;
 
-		if (getScore2() < -5000)		//»ó´ë µ¹ÀÌ 6°³°¡ ÀÖÀ¸¸é
+		if (getScore2() < -5000)		//ìƒëŒ€ ëŒì´ 6ê°œê°€ ìˆìœ¼ë©´
 		{
-			return;						//ÀÌ¹ø Minimax¸¸ Á¾·á
+			return;						//ì´ë²ˆ Minimaxë§Œ ì¢…ë£Œ
 		}
 
-		int turn = (current_depth + 1) % 2;		//depth¿¡ µû¶ó turnÀÌ ´Ş¶óÁü.
+		int turn = (current_depth + 1) % 2;		//depthì— ë”°ë¼ turnì´ ë‹¬ë¼ì§.
 
 		if (turn == 0)
 			turn = 2;
 
-		if (turn == 2)			//»ó´ë ÅÏÀÌ¸é ¹İÀü½ÃÄÑ¼­ ÀüÀåÅ½»ö ½ÇÇà
-			reverse();			//¹İÀü
+		if (turn == 2)			//ìƒëŒ€ í„´ì´ë©´ ë°˜ì „ì‹œì¼œì„œ ì „ì¥íƒìƒ‰ ì‹¤í–‰
+			reverse();			//ë°˜ì „
 
-		warSearch(turn);		//ÀüÀåÅ½»ö
+		warSearch(turn);		//ì „ì¥íƒìƒ‰
 
 		if (turn == 2)
-			reverse();			//¹İÀü µ¹·Á³õ±â
+			reverse();			//ë°˜ì „ ëŒë ¤ë†“ê¸°
 
-		//µ¹µÎ°í Minimax ±×¸®°í µ¹ Áö¿ì±â
-		for (int i = 0; i < childNum; i++)		//µ¹À» µÎ¾î childnum¸¸Å­ treeÀÇ ³ëµå¸¦ »ı¼ºÇÕ´Ï´Ù.
+		//ëŒë‘ê³  Minimax ê·¸ë¦¬ê³  ëŒ ì§€ìš°ê¸°
+		for (int i = 0; i < childNum; i++)		//ëŒì„ ë‘ì–´ childnumë§Œí¼ treeì˜ ë…¸ë“œë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 		{
-			if (turn == 2)			//»ó´ë ÅÏÀÌ¸é ¹İÀü½ÃÄÑ¼­ ÀüÀåÅ½»ö ½ÇÇà
-				reverse();			//¹İÀü
+			if (turn == 2)			//ìƒëŒ€ í„´ì´ë©´ ë°˜ì „ì‹œì¼œì„œ ì „ì¥íƒìƒ‰ ì‹¤í–‰
+				reverse();			//ë°˜ì „
 
-			warSearch(turn);		//ÀüÀåÅ½»ö
+			warSearch(turn);		//ì „ì¥íƒìƒ‰
 
 			if (turn == 2)
-				reverse();			//¹İÀü µ¹·Á³õ±â
+				reverse();			//ë°˜ì „ ëŒë ¤ë†“ê¸°
 
-			//6¸ñÀ» ³»°¡ ¸¸µé¾úÀ¸¸é ´õ Å½»öÇÏÁö ¾Ê°í Á¾·á
+			//6ëª©ì„ ë‚´ê°€ ë§Œë“¤ì—ˆìœ¼ë©´ ë” íƒìƒ‰í•˜ì§€ ì•Šê³  ì¢…ë£Œ
 			if (max_score == 100000)
 				return;
 
-			// Ã³À½ µÎ´Â µ¹ÀÇ À§Ä¡¸¦ ÀúÀå.
+			// ì²˜ìŒ ë‘ëŠ” ëŒì˜ ìœ„ì¹˜ë¥¼ ì €ì¥.
 			if (current_depth == 0)
 			{
 				pos_x1 = battleTop[i].x / 100;
@@ -2698,26 +2698,26 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 			tempPos_y2 = battleTop[i].y % 100;
 
 
-			for (int C = 1; C <= cnt; C++)		//cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+			for (int C = 1; C <= cnt; C++)		//cntê°€ 1ì´ë©´ í•œë²ˆ ë‘ê³ , 2ë©´ ë‘ ë²ˆ ë‘¡ë‹ˆë‹¤.
 			{
 				if (C == 1)
-					tempMyMove(tempPos_x1, tempPos_y1, turn);		//Ã¹ ¹øÂ° µ¹ µÎ±â
+					tempMyMove(tempPos_x1, tempPos_y1, turn);		//ì²« ë²ˆì§¸ ëŒ ë‘ê¸°
 
 				if (C == 2)
-					tempMyMove(tempPos_x2, tempPos_y2, turn);		//µÎ ¹øÂ° µ¹ µÎ±â
+					tempMyMove(tempPos_x2, tempPos_y2, turn);		//ë‘ ë²ˆì§¸ ëŒ ë‘ê¸°
 			}
 
 			//	print_bas();
 
 			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
 
-			for (int C = 1; C <= cnt; C++)		//cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+			for (int C = 1; C <= cnt; C++)		//cntê°€ 1ì´ë©´ í•œë²ˆ ë‘ê³ , 2ë©´ ë‘ ë²ˆ ë‘¡ë‹ˆë‹¤.
 			{
 				if (C == 1)
-					deleteTempMove(tempPos_x1, tempPos_y1);		//Ã¹ ¹øÂ° µ¹ Áö¿ì±â
+					deleteTempMove(tempPos_x1, tempPos_y1);		//ì²« ë²ˆì§¸ ëŒ ì§€ìš°ê¸°
 
 				if (C == 2)
-					deleteTempMove(tempPos_x2, tempPos_y2);		//µÎ ¹øÂ° µ¹ Áö¿ì±â
+					deleteTempMove(tempPos_x2, tempPos_y2);		//ë‘ ë²ˆì§¸ ëŒ ì§€ìš°ê¸°
 			}
 
 			//	print_bas();
@@ -2725,7 +2725,7 @@ void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, 
 	}
 }
 
-//¸ğ¾ç¿¡ µû¸¥ ¸ğ¾çÀ» °¡Á®¿É´Ï´Ù.
+//ëª¨ì–‘ì— ë”°ë¥¸ ëª¨ì–‘ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
 void value_side(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l)
 {
 	int binary =
@@ -3198,7 +3198,7 @@ void value_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	default:
 		break;
 	}
-} // ¼öÁ¤¿Ï·á // ¼öÁ¤¿Ï·á
+} // ìˆ˜ì •ì™„ë£Œ // ìˆ˜ì •ì™„ë£Œ
 
 void valueHorizon()
 {
@@ -3268,7 +3268,7 @@ void valueVerticle()
 	}
 }
 
-void valueDiagonal1()  // ¢Ù
+void valueDiagonal1()  // â†˜
 {
 	for (int n = 0; n < height - 5; ++n)
 	{
@@ -3305,7 +3305,7 @@ void valueDiagonal1()  // ¢Ù
 	}
 }
 
-void valueDiagonal2() // ¢Ö
+void valueDiagonal2() // â†—
 {
 	for (int n = 5; n < height; ++n)
 	{
@@ -3397,39 +3397,39 @@ int getScore2(){
 	init_Score();
 	cal(su);
 
-	for (int i = 0; i < width; i++){ //¹İÀü½ÃÅ² Á¡¼ö¸¦ »« µÚ,
+	for (int i = 0; i < width; i++){ //ë°˜ì „ì‹œí‚¨ ì ìˆ˜ë¥¼ ëº€ ë’¤,
 		for (int j = 0; j < height; j++){
 			score[i][j] -= temp_score[i][j];
 		}
 	}
 
 
-	for (int i = 0; i < width; i++){ // º¸µåÆÇÀÇ ¸ğµç ½ºÄÚ¾î¸¦ ÃÑÇÕ
+	for (int i = 0; i < width; i++){ // ë³´ë“œíŒì˜ ëª¨ë“  ìŠ¤ì½”ì–´ë¥¼ ì´í•©
 		for (int j = 0; j < height; j++){
 			boardSum += score[i][j];
 		}
 	}
 	reverse();
 
-	//ÃÊ±âÈ­
+	//ì´ˆê¸°í™”
 	init_Score();
 	init_tmpScore();
 
 	return boardSum;
 }
 
-int getScore() //ÇöÀçÆÇÀÇ Æò°¡Á¡¼ö¸¦ ¸®ÅÏÇÕ´Ï´Ù.
+int getScore() //í˜„ì¬íŒì˜ í‰ê°€ì ìˆ˜ë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
 {
 	int value = 0;
 	int my_value = 0;
 	int op_value = 0;
 
 
-	//1¹øÀº my, 2¹øÀº opÀÇ Á¡¼ö
+	//1ë²ˆì€ my, 2ë²ˆì€ opì˜ ì ìˆ˜
 
-	//µ¹ÀÇ ¸ğ¾ç¿¡ µû¸¥ Æò°¡ Á¡¼ö¸¦ »ı¼ºÇÕ´Ï´Ù.
+	//ëŒì˜ ëª¨ì–‘ì— ë”°ë¥¸ í‰ê°€ ì ìˆ˜ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 
-	//Á¡¼ö °³¼ö ÃÊ±âÈ­
+	//ì ìˆ˜ ê°œìˆ˜ ì´ˆê¸°í™”
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 8; j++)
 			conNum[i][j] = 0;
@@ -3450,7 +3450,7 @@ int getScore() //ÇöÀçÆÇÀÇ Æò°¡Á¡¼ö¸¦ ¸®ÅÏÇÕ´Ï´Ù.
 
 
 
-	//¹İÀü ÀÌÀüÀÌ¹Ç·Î, 1¹ø, Áï, ÀÚ½ÅÀÇ ¿É¼ÇÀ¸·Î Á¡¼ö »ı¼º
+	//ë°˜ì „ ì´ì „ì´ë¯€ë¡œ, 1ë²ˆ, ì¦‰, ìì‹ ì˜ ì˜µì…˜ìœ¼ë¡œ ì ìˆ˜ ìƒì„±
 	valueTurn = 1;
 
 	valueHorizon();
@@ -3462,17 +3462,17 @@ int getScore() //ÇöÀçÆÇÀÇ Æò°¡Á¡¼ö¸¦ ¸®ÅÏÇÕ´Ï´Ù.
 	valueDiagonal2();
 
 	for (int i = 0; i < 8; i++)
-		my_value += my_con[i] * conNum[1][i];		//Á¡¼ö * °³¼ö
+		my_value += my_con[i] * conNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		my_value += my_ind[i] * indNum[1][i];		//Á¡¼ö * °³¼ö
+		my_value += my_ind[i] * indNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		my_value += my_jump[i] * jumNum[1][i];		//Á¡¼ö * °³¼ö
+		my_value += my_jump[i] * jumNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		my_value += my_slp[i] * slpNum[1][i];		//Á¡¼ö * °³¼ö
+		my_value += my_slp[i] * slpNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
 
-	reverse();		//ÃÖÃÊ ¹İÀü
+	reverse();		//ìµœì´ˆ ë°˜ì „
 
-	//¹İÀü ÀÌÈÄÀÌ¹Ç·Î 2¹ø, Áï, »ó´ë¹æ ¿É¼ÇÀ¸·Î Á¡¼ö »ı¼º	
+	//ë°˜ì „ ì´í›„ì´ë¯€ë¡œ 2ë²ˆ, ì¦‰, ìƒëŒ€ë°© ì˜µì…˜ìœ¼ë¡œ ì ìˆ˜ ìƒì„±	
 	valueTurn = 2;
 
 	valueHorizon();
@@ -3483,17 +3483,17 @@ int getScore() //ÇöÀçÆÇÀÇ Æò°¡Á¡¼ö¸¦ ¸®ÅÏÇÕ´Ï´Ù.
 
 	valueDiagonal2();
 
-	reverse();	//¹İÀü ¿ø»óº¹±Í
+	reverse();	//ë°˜ì „ ì›ìƒë³µê·€
 
 
 	for (int i = 0; i < 8; i++)
-		op_value += op_con[i] * conNum[2][i];		//Á¡¼ö * °³¼ö
+		op_value += op_con[i] * conNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		op_value += op_ind[i] * indNum[2][i];		//Á¡¼ö * °³¼ö
+		op_value += op_ind[i] * indNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		op_value += op_jump[i] * jumNum[2][i];		//Á¡¼ö * °³¼ö
+		op_value += op_jump[i] * jumNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
 	for (int i = 0; i < 7; i++)
-		op_value += op_slp[i] * slpNum[2][i];		//Á¡¼ö * °³¼ö
+		op_value += op_slp[i] * slpNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
 
 	value = my_value + op_value;
 
@@ -3513,7 +3513,7 @@ void reverse(){
 			}
 		}
 	}
-	changeBlock();// blockÃ³¸®ÇÏµµ·Ï º¯°æ
+	changeBlock();// blockì²˜ë¦¬í•˜ë„ë¡ ë³€ê²½
 	if (isRev == 0) isRev = 1;
 	else isRev = 0;
 }
@@ -3555,10 +3555,10 @@ void minmin(int cnt)
 	domymove(x, y, cnt);
 }
 
-// "»ùÇÃÄÚµå[C]"  -> ÀÚ½ÅÀÇ ÆÀ¸í (¼öÁ¤)
-// "AIºÎ¼­[C]"  -> ÀÚ½ÅÀÇ ¼Ò¼Ó (¼öÁ¤)
-// Á¦Ãâ½Ã ½ÇÇàÆÄÀÏÀº ¹İµå½Ã ÆÀ¸íÀ¸·Î Á¦Ãâ!
-char info[] = { "TeamName:Á¾¿õ¼º level4,Department:AIºÎ¼­[C]" };
+// "ìƒ˜í”Œì½”ë“œ[C]"  -> ìì‹ ì˜ íŒ€ëª… (ìˆ˜ì •)
+// "AIë¶€ì„œ[C]"  -> ìì‹ ì˜ ì†Œì† (ìˆ˜ì •)
+// ì œì¶œì‹œ ì‹¤í–‰íŒŒì¼ì€ ë°˜ë“œì‹œ íŒ€ëª…ìœ¼ë¡œ ì œì¶œ!
+char info[] = { "TeamName:ì¢…ì›…ì„± level4,Department:AIë¶€ì„œ[C]" };
 
 void myturn(int cnt) {
 	int x[2], y[2];
