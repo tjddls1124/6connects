@@ -2,9 +2,7 @@
 
 ## Q Learning format
 
-Referencing 
------------
-
+### Referencing 
 
 https://github.com/deepseasw/OmokQLearning <br/>
 http://aidev.co.kr/rlearning/1056
