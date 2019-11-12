@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/uci-ian/src/6connects/QLearing/OmokModel.ckpt"
+all_model_checkpoint_paths: "/home/uci-ian/src/6connects/QLearing/OmokModel.ckpt"
