@@ -1,3 +1,1 @@
-﻿  Source.cpp
-c:\users\tjddl\git\6connects\6connects\consoleapplication1\consoleapplication1\source.cpp(3716): warning C4101: 'temp_put' :참조되지 않은 지역 변수입니다.
-  ConsoleApplication1.vcxproj -> C:\Users\tjddl\Git\6connects\6connects\ConsoleApplication1\Debug\ConsoleApplication1.exe
+﻿  ConsoleApplication1.vcxproj -> C:\Users\tjddl\Git\6connects\6connects\ConsoleApplication1\Debug\ConsoleApplication1.exe
