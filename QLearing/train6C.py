@@ -448,10 +448,19 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 			_, loss = sess.run([optimizer, cost], feed_dict = {X: inputs, Y: targets})
 			err = err + loss
 
-			if( currentPlayer == STONE_PLAYER1 ):
-				currentPlayer = STONE_PLAYER2
-			else:
-				currentPlayer = STONE_PLAYER1
+			
+			if i==0:
+				if(currentPlayer == STONE_PLAYER1 ):
+					currentPlayer = STONE_PLAYER2
+				else:
+					currentPlayer = STONE_PLAYER1
+
+			if i%2==1:
+				if(currentPlayer == STONE_PLAYER1 ):
+					currentPlayer = STONE_PLAYER2
+				else:
+					currentPlayer = STONE_PLAYER1
+
 
 		print("Epoch " + str(iteration) + str(i) + ": err = " + str(err) + ": Win count = " + str(winCount) +
 				" Win ratio = " + str(float(winCount) / float(i + 1) * 100))

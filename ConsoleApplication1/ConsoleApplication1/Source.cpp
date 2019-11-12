@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <algorithm>
-#define BOARD_SIZE 20
-#define childNum 4
+#define BOARD_SIZE 19
+#define childNum 3
 #define depth 3
 
 int width = 19, height = 19;
@@ -23,6 +23,16 @@ typedef struct {
 	int score;
 }Coord;
 
+typedef struct {
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+	int score;
+}Coord2;
+
+
+
 Coord scoreList[400] = { 0 };
 Coord battleTop[firstSearchNum * firstSearchNum] = { 0 };
 
@@ -35,6 +45,7 @@ int opMoveNum = 0;
 
 
 int max_score = -10000;
+int setting = 0;
 
 
 int getScore();
@@ -51,25 +62,25 @@ int tempX[2];
 int tempY[2];
 
 
-//í‰ê°€ì ìˆ˜ ê´€ë ¨ ë³€ìˆ˜
-int my_con[8] = { 0, 0, 2, 4, 10, 1000, 1000, -1000 };      //ì—°ì†ëœ ëŒ
-int my_slp[7] = { 0, 0, 0, 4, 6, 8, 0 };   //í•œìª½ì´ ë§‰íŒ ëŒ
-int my_ind[7] = { 0, 0, 0, 4, 6, 8, 0 };   //ì• ë§¤í•œ ëŒ(í•œìª½ì´ ë§‰íˆê³  ë„ì–´ì§„ ëŒ)
-int my_jump[7] = { 0, 0, 0, 5, 7, 9, 0 };   //ëˆ ëŒ
+//Æò°¡Á¡¼ö °ü·Ã º¯¼ö
+int my_con[8] = { 0, 0, 0, 1, 3, 5, 1000, -1000 };      //¿¬¼ÓµÈ µ¹
+int my_slp[7] = { 0, 0, 0, 4, 6, 7, 0 };   //ÇÑÂÊÀÌ ¸·Èù µ¹
+int my_ind[7] = { 0, 0, 0, 4, 6, 7, 0 };   //¾Ö¸ÅÇÑ µ¹(ÇÑÂÊÀÌ ¸·È÷°í ¶ç¾îÁø µ¹)
+int my_jump[7] = { 0, 0, 0, 5, 7, 8, 0 };   //¶è µ¹
 
-int op_con[8] = { 0, 0, 0, -9, -1000, -1000, -1000, 1000 };      //ì—°ì†ëœ ëŒ
-int op_slp[7] = { 0, 0, 0, -6, -8, 0, 0 };   //í•œìª½ì´ ë§‰íŒ ëŒ
-int op_ind[7] = { 0, 0, 0 - 6, -8, -1000, 0 };   //ì• ë§¤í•œ ëŒ(í•œìª½ì´ ë§‰íˆê³  ë„ì–´ì§„ ëŒ)
-int op_jump[7] = { 0, 0, 0, -8, -1000, -1000, 0 };   //ëˆ ëŒ
+int op_con[8] = { 0, 0, 0, -9, -900, -900, -1000, 1000 };      //¿¬¼ÓµÈ µ¹
+int op_slp[7] = { 0, 0, 0, 0, -900, -900, 0 };   //ÇÑÂÊÀÌ ¸·Èù µ¹
+int op_ind[7] = { 0, 0, 0 - 6, -900, -900, 0 };   //¾Ö¸ÅÇÑ µ¹(ÇÑÂÊÀÌ ¸·È÷°í ¶ç¾îÁø µ¹)
+int op_jump[7] = { 0, 0, 0, -8, -900, -900, 0 };   //¶è µ¹
 
-//ê° ì ìˆ˜ë“¤ì˜ ê°œìˆ˜ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ ë°°ì—´ ìƒì„±
+//°¢ Á¡¼öµéÀÇ °³¼ö¸¦ ÀúÀåÇÏ´Â º¯¼ö ¹è¿­ »ı¼º
 int conNum[3][8] = { 0 };
 int indNum[3][7] = { 0 };
 int jumNum[3][7] = { 0 };
 int slpNum[3][7] = { 0 };
 int valueTurn;
 
-//Block ê´€ë ¨
+//Block °ü·Ã
 int blockCount = 0;
 void changeBlock();
 Coord blocks[10] = {};
@@ -79,19 +90,19 @@ int showBoard(int x, int y) {
 }
 
 
-void changeBlock(){// ë¸”ë¡ì„ ë¬´ì¡°ê±´ 1ë²ˆìœ¼ë¡œ ì²˜ë¦¬
+void changeBlock(){// ºí·ÏÀ» ¹«Á¶°Ç 1¹øÀ¸·Î Ã³¸®
 	for (int i = 0; i < blockCount; i++){
 		tempBoard[blocks[i].x][blocks[i].y] = 1;
 
 	}
 }
 
-void saveBoard(){ // í˜„ì¬ boardë¥¼ tempBoardì— ì €ì¥
+void saveBoard(){ // ÇöÀç board¸¦ tempBoard¿¡ ÀúÀå
 	blockCount = 0;
 	for (int i = 0; i < 19; i++){
 		for (int j = 0; j < 19; j++){
 			if (showBoard(i, j) == 3) {
-				//ë¸”ë¡ë¦¬ìŠ¤íŠ¸ì— ì €ì¥
+				//ºí·Ï¸®½ºÆ®¿¡ ÀúÀå
 				blocks[blockCount].x = i;
 				blocks[blockCount].y = j;
 				blockCount++;
@@ -99,7 +110,7 @@ void saveBoard(){ // í˜„ì¬ boardë¥¼ tempBoardì— ì €ì¥
 			tempBoard[i][j] = showBoard(i, j);
 		}
 	}
-	//ë¸”ë¡ì„ 1ë¡œ ë³€í™˜
+	//ºí·ÏÀ» 1·Î º¯È¯
 	changeBlock();
 }
 
@@ -591,7 +602,7 @@ void value_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	default:
 		break;
 	}
-} // ìˆ˜ì •ì™„ë£Œ // ìˆ˜ì •ì™„ë£Œ
+} // ¼öÁ¤¿Ï·á // ¼öÁ¤¿Ï·á
 
 void valueHorizon()
 {
@@ -661,7 +672,7 @@ void valueVerticle()
 	}
 }
 
-void valueDiagonal1()  // â†˜
+void valueDiagonal1()  // ¢Ù
 {
 	for (int n = 0; n < height - 5; ++n)
 	{
@@ -698,7 +709,7 @@ void valueDiagonal1()  // â†˜
 	}
 }
 
-void valueDiagonal2() // â†—
+void valueDiagonal2() // ¢Ö
 {
 	for (int n = 5; n < height; ++n)
 	{
@@ -749,28 +760,28 @@ void valueDiagonal2() // â†—
 
 
 void opScoreChange(int a, int b, int my_score, int su){
-	if (su == 0 && isRev == 0) { // ì²«ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
+	if (su == 0 && isRev == 0) { // Ã¹¹øÂ° ¼ö, ³»µ¹
 		score[a][b] += my_score + 500;
 	}
-	else if (su == 0 && isRev == 1) // ì²«ë²ˆ ì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
+	else if (su == 0 && isRev == 1) // Ã¹¹ø Â° ¼ö, »ó´ë¹æ µ¹
 		score[a][b] += my_score + 200;
-	else if (su == 1 && isRev == 0) //ë‘ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
+	else if (su == 1 && isRev == 0) //µÎ¹øÂ° ¼ö, ³»µ¹
 		score[a][b] += my_score;
-	else if (su == 1 && isRev == 1) //ë‘ë²ˆì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
+	else if (su == 1 && isRev == 1) //µÎ¹øÂ° ¼ö, »ó´ë¹æ µ¹
 		score[a][b] += my_score + 200;
 }
 
 void opScoreChange2(int a, int b, int my_score, int su){
-	// ëŒ 5ê°œì˜ ê²½ìš°
+	// µ¹ 5°³ÀÇ °æ¿ì
 
-	if (su == 0 && isRev == 0) { // ì²«ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
+	if (su == 0 && isRev == 0) { // Ã¹¹øÂ° ¼ö, ³»µ¹
 		score[a][b] += my_score + 500;
 	}
-	else if (su == 0 && isRev == 1) // ì²«ë²ˆ ì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
+	else if (su == 0 && isRev == 1) // Ã¹¹ø Â° ¼ö, »ó´ë¹æ µ¹
 		score[a][b] += my_score + 200;
-	else if (su == 1 && isRev == 0) //ë‘ë²ˆì§¸ ìˆ˜, ë‚´ëŒ
+	else if (su == 1 && isRev == 0) //µÎ¹øÂ° ¼ö, ³»µ¹
 		score[a][b] += my_score + 500;
-	else if (su == 1 && isRev == 1) //ë‘ë²ˆì§¸ ìˆ˜, ìƒëŒ€ë°© ëŒ
+	else if (su == 1 && isRev == 1) //µÎ¹øÂ° ¼ö, »ó´ë¹æ µ¹
 		score[a][b] += my_score + 200;
 }
 
@@ -781,9 +792,9 @@ bool compareCoord(const Coord &a, const Coord &b) {
 
 void sortScore(){
 	int count = 0;
-	for (int i = 0; i < width; i++){ //scoreê°’ê³¼ ì¢Œí‘œì¶”ê°€
+	for (int i = 0; i < width; i++){ //score°ª°ú ÁÂÇ¥Ãß°¡
 		for (int j = 0; j < height; j++){
-			if (score[i][j] != 0){
+			if (score[i][j] != -1 || score[i][j] != 0){
 				scoreList[count].x = i;
 				scoreList[count].y = j;
 				scoreList[count].score = score[i][j];
@@ -795,8 +806,8 @@ void sortScore(){
 }
 
 /**
-ìƒìœ„ ì ìˆ˜ë¥¼ ê°€ì§„ ì „ì¥ì„ íƒìƒ‰í•©ë‹ˆë‹¤.
-totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 ì„ ë„£ì–´ì¤ë‹ˆë‹¤.
+»óÀ§ Á¡¼ö¸¦ °¡Áø ÀüÀåÀ» Å½»öÇÕ´Ï´Ù.
+totalScore : 0 ,count : 0 , x :0 , y :0 , d: 0 À» ³Ö¾îÁİ´Ï´Ù.
 */
 void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int d, int turn)
 {
@@ -811,16 +822,22 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 			x = scoreList[i].x;
 			y = scoreList[i].y;
 			totalScore = scoreList[i].score;
-			tempBoard[x][y] = turn; //ëŒì„ ë†”ë³´ê³  ê°±ì‹ 
+			tempBoard[x][y] = turn; //µ¹À» ³öº¸°í °»½Å
 			renewScore(d + 1);
 			sortScore();
-			battleSearch(scoreList, totalScore, i * firstSearchNum, x, y, 1, turn); //ì²« ë²ˆì§¸ ëŒì¸ê²½ìš° ì¬ê·€í˜¸ì¶œ
+			battleSearch(scoreList, totalScore, i * firstSearchNum, x, y, 1, turn); //Ã¹ ¹øÂ° µ¹ÀÎ°æ¿ì Àç±ÍÈ£Ãâ
 			tempBoard[x][y] = 0;
 			renewScore(d);
 			sortScore();
 		}
 
-		if (d == 1){ //2ë²ˆì§¸ ëŒì¸ê²½ìš°
+		if (d == 1){ //2¹øÂ° µ¹ÀÎ°æ¿ì
+			
+			for (int j = 0; j < i + count; j++){
+				if (battleTop[j].x / 100 == scoreList[i].x % 100 && battleTop[j].y / 100 == scoreList[i].y % 100)
+					return;
+			}
+			
 			battleTop[count + i].x += scoreList[i].x;
 			battleTop[count + i].y += scoreList[i].y;
 			battleTop[count + i].score = scoreList[i].score + totalScore;
@@ -829,7 +846,7 @@ void battleSearch(Coord* scoreList, int totalScore, int count, int x, int y, int
 	return;
 }
 
-//ìƒìœ„ ì ìˆ˜ë¥¼ ê°€ì§„ ì „ì¥ì„ ì°¾ì•„ë‚´ì–´ ë°°ì—´ battleTopì— Sortí•˜ì—¬ ì €ì¥í•©ë‹ˆë‹¤.
+//»óÀ§ Á¡¼ö¸¦ °¡Áø ÀüÀåÀ» Ã£¾Æ³»¾î ¹è¿­ battleTop¿¡ SortÇÏ¿© ÀúÀåÇÕ´Ï´Ù.
 void warSearch(int turn){
 	renewScore(0);
 	sortScore();
@@ -858,15 +875,15 @@ void print_bas()
 	printf("\n");
 	printf("=====================================================================================\n");
 
-	for (int i = 0; i < width; ++i)
+	for (int j = 0; j < width; ++j)
 	{
-		printf("%4d", i);
+		printf("%4d", j);
 		printf("%4c", 'l');
-		for (int j = 0; j < height; ++j)
+		for (int i = 0; i < height; ++i)
 		{
 
-			if (board[i][j] == 1) printf("  %2s", "â—");
-			else if (board[i][j] == 2) printf("  %2s", "â—‹");
+			if (board[i][j] == 1) printf("  %2s", "¡Ü");
+			else if (board[i][j] == 2) printf("  %2s", "¡Û");
 			else if (board[i][j] == 3) printf("  %2s", "*");
 			else printf("%4d", score[i][j]);
 		}
@@ -3041,7 +3058,7 @@ void score_free(int a, int b, int c, int d, int e, int f, int g, int h, int i, i
 	default:
 		break;
 	}
-} // ìˆ˜ì •ì™„ë£Œ // ìˆ˜ì •ì™„ë£Œ
+} // ¼öÁ¤¿Ï·á // ¼öÁ¤¿Ï·á
 
 void horizon(int su)
 {
@@ -3111,7 +3128,7 @@ void verticle(int su)
 	}
 }
 
-void diagonal1(int su)  // â†˜
+void diagonal1(int su)  // ¢Ù
 {
 	for (int n = 0; n < height - 5; ++n)
 	{
@@ -3148,7 +3165,7 @@ void diagonal1(int su)  // â†˜
 	}
 }
 
-void diagonal2(int su) // â†—
+void diagonal2(int su) // ¢Ö
 {
 	for (int n = 5; n < height; ++n)
 	{
@@ -3233,7 +3250,7 @@ void reverse(){
 			}
 		}
 	}
-	changeBlock();// blockì²˜ë¦¬í•˜ë„ë¡ ë³€ê²½
+	changeBlock();// blockÃ³¸®ÇÏµµ·Ï º¯°æ
 	if (isRev == 0) isRev = 1;
 	else isRev = 0;
 }
@@ -3247,7 +3264,6 @@ void cal(int su){
 
 
 void renewScore(int su){
-	totalScore = 0;
 	init_Score();
 	init_tmpScore();
 	cal(su);
@@ -3270,151 +3286,275 @@ void renewScore(int su){
 	reverse();
 }
 
-void Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
+Coord2 Minimax(int current_depth, int pos_x1, int pos_x2, int pos_y1, int pos_y2, int cnt)
 {
-	//ë¸”ëŸ­ì´ ì—†ëŠ” ì²«ìˆ˜ì´ë©´ ì¤‘ì•™ì— ë‘ê¸°
+	Coord2 m3 = { 0, };
+
+	//ºí·°ÀÌ ¾ø´Â Ã¹¼öÀÌ¸é Áß¾Ó¿¡ µÎ±â
 	if (blockCount == 0 && cnt == 1)
 	{
-		tempX[0] = 9;
-		tempY[0] = 9;
-		tempX[1] = 0;
-		tempY[1] = 0;
-		return;
+		Coord2 mm;
+		mm.x1 = 9;
+		mm.y1 = 9;
+		mm.x2 = 0;
+		mm.y2 = 0;
+		mm.score = 0;
+		return mm;
 	}
 
-	//ì´ˆê¸°í™” - ë‘ëŠ” ìœ„ì¹˜ ì„ì‹œ ì €ì¥í•  ë³€ìˆ˜
+	//ÃÊ±âÈ­ - µÎ´Â À§Ä¡ ÀÓ½Ã ÀúÀåÇÒ º¯¼ö
 	int tempPos_x1 = 0;
 	int tempPos_y1 = 0;
 	int tempPos_x2 = 0;
 	int tempPos_y2 = 0;
 
-	if (current_depth == depth)		//depthê¹Œì§€ ë‚´ë ¤ê°”ìœ¼ë©´ ì¢…ë£Œ
+	if (current_depth == depth)      //depth±îÁö ³»·Á°¬À¸¸é Á¾·á
 	{
-		int totalScore = getScore2();				//renewScoreì—ì„œ totalScoreë³€ê²½í•˜ê²Œ í™•ì¸.
 
-		if (max_score < totalScore)				//ë” ì ìˆ˜ê°€ ë†’ìœ¼ë©´
-		{
-			max_score = totalScore;
-			tempX[0] = pos_x1;
-			tempY[0] = pos_y1;
+		//Ã¹ ÁÂÇ¥¿Í Æò°¡°ªÀ» ÀúÀåÇÏ´Â º¯¼ö
+		Coord2 init;
 
-			if (cnt > 1)
-			{
-				tempX[1] = pos_x2;
-				tempY[1] = pos_y2;
-			}
-		}
-		return;
+		//Æò°¡°ªÀº  getScore·Î
+		init.score = getScore2();
+		init.x1 = pos_x1;
+		init.y1 = pos_y1;
+
+		init.x2 = pos_x2;
+		init.y2 = pos_y2;
+
+		//ÁÂÇ¥´Â Ã³À½ÀÇ ÁÂÇ¥¸¦ À¯Áö
+		return init;
 	}
 
 	else
 	{
-		//í˜„ì¬ ëŒì„ ë†“ê³  Minimaxë¡œ ë“¤ì–´ì˜¨ ìƒíƒœ		
-		if (getScore2() > 5000)		//ë‚´ ëŒì´ 6ê°œê°€ ìˆìœ¼ë©´
-		{							//ì²˜ìŒ ë‘” ëŒ ì €ì¥ , Minimax ì™„ì „íˆ ì¢…ë£Œ
-			tempX[0] = pos_x1;
-			tempY[0] = pos_y1;
-			tempX[1] = pos_x2;
-			tempY[1] = pos_y2;
-			max_score = 100000;
-			return;
+		/*
+		//ÇöÀç µ¹À» ³õ°í Minimax·Î µé¾î¿Â »óÅÂ
+		if (getScore2() > 5000)      //³» µ¹ÀÌ 6°³°¡ ÀÖÀ¸¸é
+		{                     //Ã³À½ µĞ µ¹ ÀúÀå , Minimax ¿ÏÀüÈ÷ Á¾·á
+		tempX[0] = pos_x1;
+		tempY[0] = pos_y1;
+		tempX[1] = pos_x2;
+		tempY[1] = pos_y2;
+		max_score = 100000;
+		return;
 		}
 
-		//6ëª©ì„ ë‚´ê°€ ë§Œë“¤ì—ˆìœ¼ë©´ ë” íƒìƒ‰í•˜ì§€ ì•Šê³  ì¢…ë£Œ
+
+		//6¸ñÀ» ³»°¡ ¸¸µé¾úÀ¸¸é ´õ Å½»öÇÏÁö ¾Ê°í Á¾·á
 		if (max_score == 100000)
-			return;
+		return;
 
-		if (getScore2() < -5000)		//ìƒëŒ€ ëŒì´ 6ê°œê°€ ìˆìœ¼ë©´
+
+
+		if (getScore2() < -5000)      //»ó´ë µ¹ÀÌ 6°³°¡ ÀÖÀ¸¸é
 		{
-			return;						//ì´ë²ˆ Minimaxë§Œ ì¢…ë£Œ
+		return;                  //ÀÌ¹ø Minimax¸¸ Á¾·á
 		}
+		*/
+		
 
-		int turn = (current_depth + 1) % 2;		//depthì— ë”°ë¼ turnì´ ë‹¬ë¼ì§.
+		int turn = (current_depth + 1) % 2;      //depth¿¡ µû¶ó turnÀÌ ´Ş¶óÁü.
+
+		warSearch(turn);      //ÀüÀåÅ½»ö
+		Coord2 node_alpha, node_beta;
+		node_alpha.score = -20000;
+		node_beta.score = 20000;
+
+		if (getScore2() < -5000)
+			return node_alpha;
+		if (getScore2() > 5000)
+			return node_beta;
+
+
+
+		//Max³ëµåÀÌ¸é
+		if (turn == 1)
+		{
+			for (int i = 0; i < childNum; i++)
+			{
+				warSearch(turn);      //ÀüÀåÅ½»ö
+
+
+				// Ã³À½ µÎ´Â µ¹ÀÇ À§Ä¡¸¦ ÀúÀå.
+				if (current_depth == 0)
+				{
+					pos_x1 = battleTop[i].x / 100;
+					pos_y1 = battleTop[i].y / 100;
+
+					if (cnt > 1)
+					{
+						pos_x2 = battleTop[i].x % 100;
+						pos_y2 = battleTop[i].y % 100;
+					}
+				}
+
+				//µÎ´Â µ¹ÀÇ À§Ä¡¸¦ ÀúÀå
+				tempPos_x1 = battleTop[i].x / 100;
+				tempPos_y1 = battleTop[i].y / 100;
+				tempPos_x2 = battleTop[i].x % 100;
+				tempPos_y2 = battleTop[i].y % 100;
+
+
+				for (int C = 1; C <= cnt; C++)      //cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+				{
+					if (C == 1)
+						tempMyMove(tempPos_x1, tempPos_y1, turn);      //Ã¹ ¹øÂ° µ¹ µÎ±â
+
+					if (C == 2)
+						tempMyMove(tempPos_x2, tempPos_y2, turn);      //µÎ ¹øÂ° µ¹ µÎ±â
+				}
+
+				//   print_bas();
+
+				Coord2 mm;
+
+				mm = Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
+
+				for (int C = 1; C <= cnt; C++)      //cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+				{
+					if (C == 1)
+						deleteTempMove(tempPos_x1, tempPos_y1);      //Ã¹ ¹øÂ° µ¹ Áö¿ì±â
+
+					if (C == 2)
+						deleteTempMove(tempPos_x2, tempPos_y2);      //µÎ ¹øÂ° µ¹ Áö¿ì±â
+				}
+
+
+				//ÀÚ½Ä³ëµåÀÇ °ªµé Áß °¡Àå Å« °ªÀÌ ¾ËÆÄ °ª
+				if (node_alpha.score < mm.score)
+				{
+					node_alpha.x1 = mm.x1;
+					node_alpha.x2 = mm.x2;
+					node_alpha.y1 = mm.y1;
+					node_alpha.y2 = mm.y2;
+					node_alpha.score = mm.score;
+				}
+
+				//¸¶Áö¸·³ëµåÀÌ¸é Áö±İÀÇ ¾ËÆÄ°ªÀ» ±×´ë·Î ¹İÈ¯
+				if (i == childNum - 1)
+				{
+					Coord2 mm3;
+					mm3.score = node_alpha.score;
+					mm3.x1 = node_alpha.x1;
+					mm3.x2 = node_alpha.x2;
+					mm3.y1 = node_alpha.y1;
+					mm3.y2 = node_alpha.y2;
+
+					return mm3;
+				}
+			}
+
+		}
 
 		if (turn == 0)
 			turn = 2;
 
-		if (turn == 2)			//ìƒëŒ€ í„´ì´ë©´ ë°˜ì „ì‹œì¼œì„œ ì „ì¥íƒìƒ‰ ì‹¤í–‰
-			reverse();			//ë°˜ì „
+		reverse();         //¹İÀü
 
-		warSearch(turn);		//ì „ì¥íƒìƒ‰
+		warSearch(turn);      //ÀüÀåÅ½»ö
 
+		reverse();         //¹İÀü µ¹·Á³õ±â   
+
+
+
+		//Min³ëµåÀÌ¸é
 		if (turn == 2)
-			reverse();			//ë°˜ì „ ëŒë ¤ë†“ê¸°
-
-		//ëŒë‘ê³  Minimax ê·¸ë¦¬ê³  ëŒ ì§€ìš°ê¸°
-		for (int i = 0; i < childNum; i++)		//ëŒì„ ë‘ì–´ childnumë§Œí¼ treeì˜ ë…¸ë“œë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 		{
-			if (turn == 2)			//ìƒëŒ€ í„´ì´ë©´ ë°˜ì „ì‹œì¼œì„œ ì „ì¥íƒìƒ‰ ì‹¤í–‰
-				reverse();			//ë°˜ì „
 
-			warSearch(turn);		//ì „ì¥íƒìƒ‰
-
-			if (turn == 2)
-				reverse();			//ë°˜ì „ ëŒë ¤ë†“ê¸°
-
-			//6ëª©ì„ ë‚´ê°€ ë§Œë“¤ì—ˆìœ¼ë©´ ë” íƒìƒ‰í•˜ì§€ ì•Šê³  ì¢…ë£Œ
-			if (max_score == 100000)
-				return;
-
-			// ì²˜ìŒ ë‘ëŠ” ëŒì˜ ìœ„ì¹˜ë¥¼ ì €ì¥.
-			if (current_depth == 0)
+			Coord2 mm;
+			for (int i = 0; i < childNum; i++)
 			{
-				pos_x1 = battleTop[i].x / 100;
-				pos_y1 = battleTop[i].y / 100;
 
-				if (cnt > 1)
+				reverse();         //¹İÀü
+
+				warSearch(turn);      //ÀüÀåÅ½»ö
+
+				reverse();         //¹İÀü µ¹·Á³õ±â   
+
+
+				// Ã³À½ µÎ´Â µ¹ÀÇ À§Ä¡¸¦ ÀúÀå.
+				if (current_depth == 0)
 				{
-					pos_x2 = battleTop[i].x % 100;
-					pos_y2 = battleTop[i].y % 100;
+					pos_x1 = battleTop[i].x / 100;
+					pos_y1 = battleTop[i].y / 100;
+
+					if (cnt > 1)
+					{
+						pos_x2 = battleTop[i].x % 100;
+						pos_y2 = battleTop[i].y % 100;
+					}
+				}
+
+				//µÎ´Â µ¹ÀÇ À§Ä¡¸¦ ÀúÀå
+				tempPos_x1 = battleTop[i].x / 100;
+				tempPos_y1 = battleTop[i].y / 100;
+				tempPos_x2 = battleTop[i].x % 100;
+				tempPos_y2 = battleTop[i].y % 100;
+
+				for (int C = 1; C <= cnt; C++)      //cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+				{
+					if (C == 1)
+						tempMyMove(tempPos_x1, tempPos_y1, turn);      //Ã¹ ¹øÂ° µ¹ µÎ±â
+
+					if (C == 2)
+						tempMyMove(tempPos_x2, tempPos_y2, turn);      //µÎ ¹øÂ° µ¹ µÎ±â
+				}
+
+				//   print_bas();
+
+
+				mm = Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
+
+				for (int C = 1; C <= cnt; C++)      //cnt°¡ 1ÀÌ¸é ÇÑ¹ø µÎ°í, 2¸é µÎ ¹ø µÓ´Ï´Ù.
+				{
+					if (C == 1)
+						deleteTempMove(tempPos_x1, tempPos_y1);      //Ã¹ ¹øÂ° µ¹ Áö¿ì±â
+
+					if (C == 2)
+						deleteTempMove(tempPos_x2, tempPos_y2);      //µÎ ¹øÂ° µ¹ Áö¿ì±â
+				}
+				
+
+				//ÀÚ½Ä³ëµåÀÇ °ªµé Áß °¡Àå ÀÛÀº °ªÀÌ ¾ËÆÄ°ªÀÌ µÊ.				
+				if (node_beta.score > mm.score)
+				{
+					node_beta.x1 = mm.x1;
+					node_beta.x2 = mm.x2;
+					node_beta.y1 = mm.y1;
+					node_beta.y2 = mm.y2;
+					node_beta.score = mm.score;
+				}
+
+				//¸¶Áö¸·³ëµåÀÌ¸é Áö±İÀÇ ¾ËÆÄ°ªÀ» ±×´ë·Î ¹İÈ¯
+				if (i == childNum - 1)
+				{
+					Coord2 mm3;
+					mm3.score = node_beta.score;
+					mm3.x1 = node_beta.x1;
+					mm3.x2 = node_beta.x2;
+					mm3.y1 = node_beta.y1;
+					mm3.y2 = node_beta.y2;
+
+					return mm3;
 				}
 			}
-
-			tempPos_x1 = battleTop[i].x / 100;
-			tempPos_y1 = battleTop[i].y / 100;
-			tempPos_x2 = battleTop[i].x % 100;
-			tempPos_y2 = battleTop[i].y % 100;
-
-
-			for (int C = 1; C <= cnt; C++)		//cntê°€ 1ì´ë©´ í•œë²ˆ ë‘ê³ , 2ë©´ ë‘ ë²ˆ ë‘¡ë‹ˆë‹¤.
-			{
-				if (C == 1)
-					tempMyMove(tempPos_x1, tempPos_y1, turn);		//ì²« ë²ˆì§¸ ëŒ ë‘ê¸°
-
-				if (C == 2)
-					tempMyMove(tempPos_x2, tempPos_y2, turn);		//ë‘ ë²ˆì§¸ ëŒ ë‘ê¸°
-			}
-
-			//	print_bas();
-
-			Minimax(current_depth + 1, pos_x1, pos_x2, pos_y1, pos_y2, cnt);
-
-			for (int C = 1; C <= cnt; C++)		//cntê°€ 1ì´ë©´ í•œë²ˆ ë‘ê³ , 2ë©´ ë‘ ë²ˆ ë‘¡ë‹ˆë‹¤.
-			{
-				if (C == 1)
-					deleteTempMove(tempPos_x1, tempPos_y1);		//ì²« ë²ˆì§¸ ëŒ ì§€ìš°ê¸°
-
-				if (C == 2)
-					deleteTempMove(tempPos_x2, tempPos_y2);		//ë‘ ë²ˆì§¸ ëŒ ì§€ìš°ê¸°
-			}
-
-			//	print_bas();
 		}
 	}
-}
 
-int getScore() //í˜„ì¬íŒì˜ í‰ê°€ì ìˆ˜ë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
+	return m3;
+}int getScore() //ÇöÀçÆÇÀÇ Æò°¡Á¡¼ö¸¦ ¸®ÅÏÇÕ´Ï´Ù.
 {
 	int value = 0;
 	int my_value = 0;
 	int op_value = 0;
 
 
-	//1ë²ˆì€ my, 2ë²ˆì€ opì˜ ì ìˆ˜
+	//1¹øÀº my, 2¹øÀº opÀÇ Á¡¼ö
 
-	//ëŒì˜ ëª¨ì–‘ì— ë”°ë¥¸ í‰ê°€ ì ìˆ˜ë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
+	//µ¹ÀÇ ¸ğ¾ç¿¡ µû¸¥ Æò°¡ Á¡¼ö¸¦ »ı¼ºÇÕ´Ï´Ù.
 
-	//ì ìˆ˜ ê°œìˆ˜ ì´ˆê¸°í™”
+	//Á¡¼ö °³¼ö ÃÊ±âÈ­
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 8; j++)
 			conNum[i][j] = 0;
@@ -3435,7 +3575,7 @@ int getScore() //í˜„ì¬íŒì˜ í‰ê°€ì ìˆ˜ë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
 
 
 
-	//ë°˜ì „ ì´ì „ì´ë¯€ë¡œ, 1ë²ˆ, ì¦‰, ìì‹ ì˜ ì˜µì…˜ìœ¼ë¡œ ì ìˆ˜ ìƒì„±
+	//¹İÀü ÀÌÀüÀÌ¹Ç·Î, 1¹ø, Áï, ÀÚ½ÅÀÇ ¿É¼ÇÀ¸·Î Á¡¼ö »ı¼º
 	valueTurn = 1;
 
 	valueHorizon();
@@ -3447,17 +3587,17 @@ int getScore() //í˜„ì¬íŒì˜ í‰ê°€ì ìˆ˜ë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
 	valueDiagonal2();
 
 	for (int i = 0; i < 8; i++)
-		my_value += my_con[i] * conNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
+		my_value += my_con[i] * conNum[1][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		my_value += my_ind[i] * indNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
+		my_value += my_ind[i] * indNum[1][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		my_value += my_jump[i] * jumNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
+		my_value += my_jump[i] * jumNum[1][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		my_value += my_slp[i] * slpNum[1][i];		//ì ìˆ˜ * ê°œìˆ˜
+		my_value += my_slp[i] * slpNum[1][i];		//Á¡¼ö * °³¼ö
 
-	reverse();		//ìµœì´ˆ ë°˜ì „
+	reverse();		//ÃÖÃÊ ¹İÀü
 
-	//ë°˜ì „ ì´í›„ì´ë¯€ë¡œ 2ë²ˆ, ì¦‰, ìƒëŒ€ë°© ì˜µì…˜ìœ¼ë¡œ ì ìˆ˜ ìƒì„±	
+	//¹İÀü ÀÌÈÄÀÌ¹Ç·Î 2¹ø, Áï, »ó´ë¹æ ¿É¼ÇÀ¸·Î Á¡¼ö »ı¼º	
 	valueTurn = 2;
 
 	valueHorizon();
@@ -3468,17 +3608,17 @@ int getScore() //í˜„ì¬íŒì˜ í‰ê°€ì ìˆ˜ë¥¼ ë¦¬í„´í•©ë‹ˆë‹¤.
 
 	valueDiagonal2();
 
-	reverse();	//ë°˜ì „ ì›ìƒë³µê·€
+	reverse();	//¹İÀü ¿ø»óº¹±Í
 
 
 	for (int i = 0; i < 8; i++)
-		op_value += op_con[i] * conNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
+		op_value += op_con[i] * conNum[2][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		op_value += op_ind[i] * indNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
+		op_value += op_ind[i] * indNum[2][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		op_value += op_jump[i] * jumNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
+		op_value += op_jump[i] * jumNum[2][i];		//Á¡¼ö * °³¼ö
 	for (int i = 0; i < 7; i++)
-		op_value += op_slp[i] * slpNum[2][i];		//ì ìˆ˜ * ê°œìˆ˜
+		op_value += op_slp[i] * slpNum[2][i];		//Á¡¼ö * °³¼ö
 
 	value = my_value + op_value;
 
@@ -3497,21 +3637,21 @@ int getScore2(){
 	init_Score();
 	cal(su);
 
-	for (int i = 0; i < width; i++){ //ë°˜ì „ì‹œí‚¨ ì ìˆ˜ë¥¼ ëº€ ë’¤,
+	for (int i = 0; i < width; i++){ //¹İÀü½ÃÅ² Á¡¼ö¸¦ »« µÚ,
 		for (int j = 0; j < height; j++){
 			score[i][j] -= temp_score[i][j];
 		}
 	}
 
 
-	for (int i = 0; i < width; i++){ // ë³´ë“œíŒì˜ ëª¨ë“  ìŠ¤ì½”ì–´ë¥¼ ì´í•©
+	for (int i = 0; i < width; i++){ // º¸µåÆÇÀÇ ¸ğµç ½ºÄÚ¾î¸¦ ÃÑÇÕ
 		for (int j = 0; j < height; j++){
-			boardSum += score[i][j];			
+			boardSum += temp_score[i][j];			
 		}
 	}
 	reverse();
 
-	//ì´ˆê¸°í™”
+	//ÃÊ±âÈ­
 	init_Score();
 	init_tmpScore();
 
@@ -3519,17 +3659,17 @@ int getScore2(){
 }
 
 
-//ëª¨ì–‘ì— ë”°ë¥¸ ëª¨ì–‘ì„ ê°€ì ¸ì˜µë‹ˆë‹¤.
+//¸ğ¾ç¿¡ µû¸¥ ¸ğ¾çÀ» °¡Á®¿É´Ï´Ù.
 void main()
 {
 	int x[2], y[2];
 	int input = 0;
-	int t = 1;
-	board[8][13] = 2;
+	int t = 2;
+	board[9][9] = 1;
 
-	//ë¸”ëŸ­ì§€ì •
-	board[12][6] = 3;
-	board[9][13] = 3;
+	//ºí·°ÁöÁ¤
+	//board[12][6] = 3;
+	//board[9][13] = 3;
 	
 	saveBoard();
 
@@ -3546,15 +3686,26 @@ void main()
 		x[1] = battleTop[0].x % 100;
 		y[1] = battleTop[0].y % 100;
 		*/
-		printf("%d, %d    %d, %d , %dì \n", battleTop[0].x / 100, battleTop[0].y / 100, battleTop[0].x % 100, battleTop[0].y % 100, battleTop[0].score);
-		printf("%d, %d    %d, %d , %dì \n", battleTop[1].x / 100, battleTop[1].y / 100, battleTop[1].x % 100, battleTop[1].y % 100, battleTop[1].score);
-		printf("%d, %d    %d, %d , %dì \n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[2].score);
+		printf("%d, %d    %d, %d , %dÁ¡\n", battleTop[0].x / 100, battleTop[0].y / 100, battleTop[0].x % 100, battleTop[0].y % 100, battleTop[0].score);
+		printf("%d, %d    %d, %d , %dÁ¡\n", battleTop[1].x / 100, battleTop[1].y / 100, battleTop[1].x % 100, battleTop[1].y % 100, battleTop[1].score);
+		printf("%d, %d    %d, %d , %dÁ¡\n", battleTop[2].x / 100, battleTop[2].y / 100, battleTop[2].x % 100, battleTop[2].y % 100, battleTop[2].score);
+		printf("%d, %d    %d, %d , %dÁ¡\n", battleTop[3].x / 100, battleTop[3].y / 100, battleTop[3].x % 100, battleTop[3].y % 100, battleTop[3].score);
 
 		max_score = -10000;
+		setting = 0;
 
 		if (t == 2)
 			reverse();
-		Minimax(0, 0, 0, 0, 0, 2);
+
+		Coord2 mm1;
+		
+		mm1= Minimax(0, 0, 0, 0, 0, 2);
+
+		tempX[0] = mm1.x1;
+		tempX[1] = mm1.x2; 
+		tempY[0] = mm1.y1;
+		tempY[1] = mm1.y2;
+
 		if (t == 2)
 			reverse();
 
@@ -3563,13 +3714,13 @@ void main()
 
 		printf("\nturn : %d ( 1 : black , 2 : white)\n", t); //
 		int temp_put;
-		//printf("temp : (tempëŒë¡œ ë†“ìœ¼ë ¤ë©´ 1ì„ ì…ë ¥í•˜ì„¸ìš”, ì§ì ‘ì…ë ¥ì‹œ ë‹¤ë¥¸í‚¤ë¥¼ ì…ë ¥í•˜ì„¸ìš”)"); 
+		//printf("temp : (tempµ¹·Î ³õÀ¸·Á¸é 1À» ÀÔ·ÂÇÏ¼¼¿ä, Á÷Á¢ÀÔ·Â½Ã ´Ù¸¥Å°¸¦ ÀÔ·ÂÇÏ¼¼¿ä)"); 
 		//scanf_s("%d", &temp_put);
 		printf("\n");
-		printf("ë†“ì„ ëŒì˜ ì¢Œí‘œë¥¼ ì…ë ¥í•˜ì„¸ìš” :\n");
+		printf("³õÀ» µ¹ÀÇ ÁÂÇ¥¸¦ ÀÔ·ÂÇÏ¼¼¿ä :\n");
 		printf(" x1 y1 : \n");
 
-		//a ì…ë ¥ì‹œ tempë¡œ ë‚˜ì˜¨ ëŒë¡œ ê·¸ëƒ¥ ì§„í–‰, ë‹¤ë¥¸ í‚¤ ì…ë ¥ì‹œ 2ê°œ ì…ë ¥ë°›ì•„ì„œ ì§ì ‘ ë‘ëŠ” ê±¸ë¡œ ì§„í–‰
+		//a ÀÔ·Â½Ã temp·Î ³ª¿Â µ¹·Î ±×³É ÁøÇà, ´Ù¸¥ Å° ÀÔ·Â½Ã 2°³ ÀÔ·Â¹Ş¾Æ¼­ Á÷Á¢ µÎ´Â °É·Î ÁøÇà
 		/*if (temp_put == 1)
 		{
 			x[0] = tempX[0];

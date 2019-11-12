@@ -49,7 +49,7 @@ def showBoard(env):
 # 게임 플레이 함수
 #------------------------------------------------------------
 def playGame(env, sess):
-
+	turn_count = 0
 	env.reset()
 
 	gameOver = False
@@ -68,11 +68,21 @@ def playGame(env, sess):
 
 		showBoard(env)
 		time.sleep(3)
+		turn_count += 1
+		print("turn_count: " + str(turn_count))
 
-		if( currentPlayer == STONE_PLAYER1 ):
-			currentPlayer = STONE_PLAYER2
-		else:
-			currentPlayer = STONE_PLAYER1
+	# change rule adjusting 6cot----------
+		if turn_count==0:
+			if(currentPlayer == STONE_PLAYER1 ):
+				currentPlayer = STONE_PLAYER2
+			else:
+				currentPlayer = STONE_PLAYER1
+
+		if turn_count%2==1:
+			if(currentPlayer == STONE_PLAYER1 ):
+				currentPlayer = STONE_PLAYER2
+			else:
+				currentPlayer = STONE_PLAYER1
 #------------------------------------------------------------
 
 
