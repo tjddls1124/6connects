@@ -32,9 +32,9 @@ def showBoard(env):
 	for y in range(gridSize):
 		for x in range(gridSize):
 			if( env.state[y * gridSize + x] == STONE_PLAYER1 ):
-				sys.stdout.write(' ○')
+				sys.stdout.write(' ○ ')
 			elif( env.state[y * gridSize + x] == STONE_PLAYER2 ):
-				sys.stdout.write(' ●')
+				sys.stdout.write(' ● ')
 			else:
 				sys.stdout.write(' ┿ ')
 		sys.stdout.write('\n')

@@ -26,11 +26,12 @@ maxMemory = 500
 batchSize = 50
 epoch = 1000
 epsilonStart = 1
-epsilonDiscount = 0.999
-epsilonMinimumValue = 0.1
-discount = 0.9
-learningRate = 0.2
+epsilonDiscount = 0.9999	##e-greedy의 감쇄값(게임당 감쇄)		0.99 -> 0.9999
+epsilonMinimumValue = 0.1	##e-greedy의 최솟값
+discount = 0.99				##적은 수의 돌을 두고 이기고자 하는 이유로 넣은 reward감소값(턴 당 감쇄)  0.9 -> 0.99
+learningRate = 0.4			##기존의 queue값을 어느정도 유지하기 위한 값(값 0.2-> 0.4로 증가) (1-.04 = 0.6 즉 , 60% 유지)
 winReward = 1
+nearReward = 0.001 			##근처에 돌이 있는 곳에 돌을 두면 얻는 reward
 #------------------------------------------------------------
 
 
@@ -122,42 +123,42 @@ class OmokEnvironment():
 		# 왼쪽 검사
 		if( action % self.gridSize > 0 ):
 			if( self.state[action - 1] == player ):
-				return 0.05
+				return nearReward
 
 		# 오른쪽 검사
 		if( action % self.gridSize < self.gridSize - 1 ):
 			if( self.state[action + 1] == player ):
-				return 0.05
+				return nearReward
 
 		# 위 검사
 		if( action - self.gridSize >= 0 ):
 			if( self.state[action - self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		# 아래 검사
 		if( action + self.gridSize < self.nbStates ):
 			if( self.state[action + self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		# 왼쪽 위 검사
 		if( (action % self.gridSize > 0) and (action - self.gridSize >= 0) ):
 			if( self.state[action - 1 - self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		# 오른쪽 위 검사
 		if( (action % self.gridSize < self.gridSize - 1) and (action - self.gridSize >= 0) ):
 			if( self.state[action + 1 - self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		# 왼쪽 아래 검사
 		if( (action % self.gridSize > 0) and (action + self.gridSize < self.nbStates) ):
 			if( self.state[action - 1 + self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		# 오른쪽 아래 검사
 		if( (action % self.gridSize < self.gridSize - 1) and (action + self.gridSize < self.nbStates) ):
 			if( self.state[action + 1 + self.gridSize] == player ):
-				return 0.05
+				return nearReward
 
 		return 0
 
@@ -411,6 +412,8 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 		gameOver = False
 		currentState = env.getState()
 
+		if (epsilon > epsilonMinimumValue):
+			epsilon = epsilon * epsilonDiscount
 
 		currentPlayer = STONE_PLAYER1
 
@@ -433,9 +436,6 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 			else:
 				action = env.getAction(sess, currentState)
 
-			if( epsilon > epsilonMinimumValue ):
-				epsilon = epsilon * epsilonDiscount
-
 			nextState, reward, gameOver = env.act(currentPlayer, action)
 
 			if( reward == 1 and currentPlayer == STONE_PLAYER1 ):
@@ -448,6 +448,7 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 
 			inputs, targets = memory.getBatch(output_layer, batchSize, nbActions, nbStates, sess, X)
 
+			## 해당 라인에서 input과 target의 정보를
 			_, loss = sess.run([optimizer, cost], feed_dict = {X: inputs, Y: targets})
 			err = err + loss
 
