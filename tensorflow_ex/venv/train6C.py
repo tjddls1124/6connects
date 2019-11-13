@@ -24,7 +24,7 @@ nbStates = gridSize * gridSize
 hiddenSize = 100
 maxMemory = 500
 batchSize = 50
-epoch = 100
+epoch = 1000
 epsilonStart = 1
 epsilonDiscount = 0.999
 epsilonMinimumValue = 0.1
@@ -410,8 +410,8 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 		err = 0
 		gameOver = False
 		currentState = env.getState()
-		print(currentState)
-		#currentState[0][int(gridSize / 2 * gridSize / 2)] = STONE_PLAYER1
+
+
 		currentPlayer = STONE_PLAYER1
 
 		while( gameOver != True ):
@@ -424,6 +424,9 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 				currentState = env.getState()
 			else:
 				currentState = env.getStateInverse()
+
+			#print("currentState : --------------------")
+			#print(currentState)
 
 			if( randf(0, 1) <= epsilon ):
 				action = env.getActionRandom()
@@ -448,15 +451,26 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 			_, loss = sess.run([optimizer, cost], feed_dict = {X: inputs, Y: targets})
 			err = err + loss
 
-			if( currentPlayer == STONE_PLAYER1 ):
-				currentPlayer = STONE_PLAYER2
-			else:
-				currentPlayer = STONE_PLAYER1
 
-		print("Epoch " + str(iteration) + str(i) + ": err = " + str(err) + ": Win count = " + str(winCount) +
+			if i==0:
+				if(currentPlayer == STONE_PLAYER1 ):
+					currentPlayer = STONE_PLAYER2
+				else:
+					currentPlayer = STONE_PLAYER1
+
+			if i%2==1:
+				if(currentPlayer == STONE_PLAYER1 ):
+					currentPlayer = STONE_PLAYER2
+				else:
+					currentPlayer = STONE_PLAYER1
+
+		st_i = str(i)
+		if(i<10) :
+			st_i = "0" + str(i)
+		print("Epoch " + str(iteration) + st_i + ": err = " + str(err) + ": Win count = " + str(winCount) +
 				" Win ratio = " + str(float(winCount) / float(i + 1) * 100))
 
-		print(targets)
+		#print(targets)
 
 		if( (i % 10 == 0) and (i != 0) ):
 			save_path = saver.save(sess, os.getcwd() + "/OmokModel.ckpt")
